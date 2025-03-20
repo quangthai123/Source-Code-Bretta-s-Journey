@@ -2,9 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class FallTrap : CanDamagePlayer
 {
-    private void OnTriggerStay2D(Collider2D collision)
+    protected override void OnTriggerEnter2D(Collider2D collision)
     {
         if(collision.transform.parent.GetComponent<Player>() != null)
         {

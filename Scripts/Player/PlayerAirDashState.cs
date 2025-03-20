@@ -21,7 +21,7 @@ public class PlayerAirDashState : PlayerStates
             effect2.localScale = new Vector2(0.2666667f, 1f);
         }
         player.isKnocked = true;
-        Debug.Log("Enter airDash State!!");
+        AudioManager.instance.PlaySFX(4);
         player.StartSpawnDashShadowFx();
     }
     public override void Exit()

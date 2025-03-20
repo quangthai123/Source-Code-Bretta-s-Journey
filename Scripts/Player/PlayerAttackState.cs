@@ -113,15 +113,18 @@ public class PlayerAttackState : PlayerStates
         base.ChangeStateByInput();
         if ((Input.GetKeyDown(KeyCode.LeftShift) || InputManager.Instance.dashed) && Time.time - player.dashTimer > player.dashCooldown)
         {
-            stateMachine.ChangeState(player.dashState);
             if (((horizontalInput < 0 && player.facingDir == 1) || (horizontalInput > 0 && player.facingDir == -1)) ||
                 ((InputManager.Instance.moveDir.x < 0 && player.facingDir == 1) || (InputManager.Instance.moveDir.x > 0 && player.facingDir == -1)))
             { 
                 player.Flip();
                 Debug.Log("Cancel attack anim");            
             }
+            if(player.CheckGrounded())
+                stateMachine.ChangeState(player.dashState);
+            else
+                stateMachine.ChangeState(player.airDashState);
         }
-        if (Input.GetKeyDown(KeyCode.J) || InputManager.Instance.parried)
+        if (player.CheckGrounded() && (Input.GetKeyDown(KeyCode.J) || InputManager.Instance.parried))
             stateMachine.ChangeState(player.shieldState);
         if (player.canHaveNextCombo && (Input.GetKeyDown(KeyCode.K) || InputManager.Instance.attacked))
             player.gotNextCombo = true;

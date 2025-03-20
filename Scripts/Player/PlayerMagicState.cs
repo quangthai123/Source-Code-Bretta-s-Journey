@@ -17,13 +17,17 @@ public class PlayerMagicState : PlayerStates {
         player.knockFlip = true;
         PlayerEffectSpawner.instance.Spawn(PlayerEffectSpawner.instance.useSkillFx1, player.transform.position, Quaternion.identity);
         PlayerEffectSpawner.instance.Spawn(PlayerEffectSpawner.instance.useSkillFx3, player.transform.position, Quaternion.identity);
-        SkillManager.instance.UseSkill();
+        //MobileInputTesting.Instance.en
+        SkillManager.instance.UseSkillSlot2();
     }
     public override void Exit() 
     {
         base.Exit();
         player.knockFlip = false;
         player.anim.speed = 1f;
+        MobileInputTesting.Instance.SetStateOfMagicBtn();
+        MagicSkillAvatars.Instance.RunCooldownAvatar(1, SkillManager.instance.GetSkill2Cooldown());
+        SkillManager.instance.RunCdSkill2();
     }
 
 

@@ -10,6 +10,7 @@ public class GameDatas : ScriptableObject
     public int saveSlot;
     public int deadCount;
     public int playedTime;
+    public int preShowInterstitialTime;
     [Header("Scenario Select Lv")]
     public bool isScenario;
     [Header("Player Pos")]
@@ -40,6 +41,7 @@ public class GameDatas : ScriptableObject
     public List<int> newArmorialItems;
     public List<int> newImportantItems;
     public List<int> newSwordPieceItems;
+    public List<int> newMagicGemItems;
 
     public List<int> amorialHadItems;
     public List<int> amorialEquippedItems;
@@ -57,6 +59,9 @@ public class GameDatas : ScriptableObject
     public int currentSwordPieceSlot;
 
     public List<int> swordPairsActivated;
+    
+    public List<int> magicGemHadItems;
+    public List<int> magicGemEquippedItems;
 
 
     [Header("Boss Infor")]
@@ -74,6 +79,7 @@ public class GameDatas : ScriptableObject
         saveSlot = _saveSlot;
         deadCount = 0;
         playedTime = 0;
+        preShowInterstitialTime = 0;
 
         isScenario = false;
 
@@ -105,6 +111,7 @@ public class GameDatas : ScriptableObject
         newArmorialItems = null;
         newImportantItems = null;
         newSwordPieceItems = null;
+        newMagicGemItems = null;
 
         amorialHadItems = null;
         amorialEquippedItems = null;
@@ -127,6 +134,13 @@ public class GameDatas : ScriptableObject
         }
         swordPairsActivated = new List<int>();
 
+        magicGemHadItems = new List<int>();
+        magicGemEquippedItems = new List<int>();
+        for (int i = 0; i < 2; i++)
+        {
+            magicGemEquippedItems.Add(-1);
+        }
+
         winBoss1 = false;
 
         selectingTab = 0;
@@ -144,6 +158,7 @@ public class GameDatas : ScriptableObject
         this.saveSlot = _gameData.saveSlot;
         this.deadCount = _gameData.deadCount;
         this.playedTime = _gameData.playedTime;
+        preShowInterstitialTime = _gameData.preShowInterstitialTime;
 
         this.isScenario = _gameData.isScenario;
 
@@ -173,6 +188,7 @@ public class GameDatas : ScriptableObject
         this.newArmorialItems = _gameData.newArmorialItems;
         this.newImportantItems = _gameData.newImportantItems;
         this.newSwordPieceItems = _gameData.newSwordPieceItems;
+        this.newMagicGemItems = _gameData.newMagicGemItems;
 
         this.amorialHadItems = _gameData.amorialHadItems;
         this.amorialEquippedItems = _gameData.amorialEquippedItems;
@@ -184,12 +200,15 @@ public class GameDatas : ScriptableObject
         this.swordPieceHadItems = _gameData.swordPieceHadItems;
         this.swordPieceEquippedItems = _gameData.swordPieceEquippedItems;
         this.currentSwordPieceSlot = _gameData.currentSwordPieceSlot;
-        swordPieceMergedItems = _gameData.swordPieceMergedItems;
+        this.swordPieceMergedItems = _gameData.swordPieceMergedItems;
 
-        perfectSwordsHad = _gameData.perfectSwordsHad;
-        perfectSwordsEquipped = _gameData.perfectSwordsEquipped;
+        this.perfectSwordsHad = _gameData.perfectSwordsHad;
+        this.perfectSwordsEquipped = _gameData.perfectSwordsEquipped;
 
         this.swordPairsActivated = _gameData.swordPairsActivated;
+
+        this.magicGemHadItems = _gameData.magicGemHadItems;
+        this.magicGemEquippedItems = _gameData.magicGemEquippedItems;
 
         this.winBoss1 = _gameData.winBoss1;
 

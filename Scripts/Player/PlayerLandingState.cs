@@ -13,6 +13,7 @@ public class PlayerLandingState : PlayerStates
         player.knockFlip = true;
         rb.velocity = new Vector2(0f, rb.velocity.y);
         PlayerEffectSpawner.instance.Spawn(PlayerEffectSpawner.instance.strongGroundedEffect, player.centerEffectPos.position, Quaternion.identity);       
+        AudioManager.instance.PlaySFX(14);
     }
     public override void Exit()
     {

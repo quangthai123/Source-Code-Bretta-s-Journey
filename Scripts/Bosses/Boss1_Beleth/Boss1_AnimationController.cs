@@ -18,5 +18,6 @@ public class Boss1_AnimationController : EnemyAnimationController
         //leftEffect.position = new Vector2(spawnPos.position.x - 2.67f, spawnPos.position.y);
         Transform rightEffect = BossEffectSpawner.Instance.Spawn(BossEffectSpawner.Instance.Boss1_Attack2EffectRight, new Vector2(spawnPos.position.x + 2.67f, spawnPos.position.y), Quaternion.identity);
         //rightEffect.position = new Vector2(spawnPos.position.x + 2.67f, spawnPos.position.y);
+        AudioManager.instance.PlaySFX(18);
     }
 }

@@ -18,7 +18,7 @@ public class PlayerDashState : PlayerStates
         player.anim.ResetTrigger("DashStop");
         player.normalCol.SetActive(false);
         player.dashCol.SetActive(true);
-        AudioManager.instance.PlaySFX(0);
+        AudioManager.instance.PlaySFX(2);
         if (!player.CheckSlope())
             startDashFx = PlayerEffectSpawner.instance.Spawn("endDashFx", player.leftEffectPos.position, Quaternion.identity);
         player.isKnocked = true;

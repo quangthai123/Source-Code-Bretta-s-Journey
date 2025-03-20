@@ -13,6 +13,7 @@ public class PlayerDeathState : PlayerStates
     {
         base.Start();
         SaveManager.instance.tempGameData.deadCount++;
+        AudioManager.instance.PlaySFX(11);
         player.isKnocked = true;
         setActiveDeathUI = false;
     }

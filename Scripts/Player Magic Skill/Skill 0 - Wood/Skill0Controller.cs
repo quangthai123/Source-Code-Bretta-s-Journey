@@ -6,6 +6,7 @@ public class Skill0Controller : CanDamageEnemy
 {
     private bool canLaunch;
     private BoxCollider2D boxCol;
+    [SerializeField] private float launchSpeed;
     protected override void OnEnable()
     {
         base.OnEnable();

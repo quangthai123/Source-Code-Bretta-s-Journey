@@ -67,7 +67,16 @@ public class GameManager : MonoBehaviour
     public void SetActiveTrueInventoryUIToLoad() => inventoryUI.gameObject.SetActive(true);
     public void ShowAdToRevive()
     {
-        Debug.Log("Watch ad!");
+        Debug.Log("Watch ad to revive!");
+        Observer.Notify(GameEvent.OnWatchingAd, RewardType.Revive);
+    }
+    public void OnClickWatchRewardAdToEarnDemonBlood()
+    {
+        Debug.Log("Watch ad to earn demon blood!");
+        Observer.Notify(GameEvent.OnWatchingAd, RewardType.EarnDemonBlood);
+    }
+    public void ReviveByRewardedAd()
+    {
         if (PlayerFakeSoul.instance != null)
             Destroy(PlayerFakeSoul.instance.gameObject);
         if (player.playerStats.haveDied && PlayerSoulController.instance != null && tempGameData.tempCurrentScene == tempGameData.soulScene)
@@ -86,14 +95,13 @@ public class GameManager : MonoBehaviour
         player.playerStats.Refill2FlaskByRevive();
         PlayScreenUI.instance.DeactiveDeathUI();
         player.ReviveState();
+
     }
     public void ResetGame()
     {
         pressedResetGame = true;
-        PlayScreenUI.instance.finishManaResist = false;
-        PlayScreenUI.instance.finishDeductCurrencyUI = false;
-        //tempGameData.currentHealth = (int)tempGameData.maxHealth.GetValue();
-        player.playerStats.haveDied = true;
+        Observer.Notify(GameEvent.OnResetGame, null); // PlayScreenUI
+
         tempGameData.currentMana = 0;
         tempGameData.initializePos = tempGameData.revivalCheckPointPos;
         tempGameData.haveDied = true;
@@ -101,20 +109,14 @@ public class GameManager : MonoBehaviour
         tempGameData.soulPos = new Vector2(player.transform.position.x - player.facingDir, player.transform.position.y);
         tempGameData.tempCurrentScene = tempGameData.currentScene;
         tempGameData.currencySoul = player.playerStats.currency;
-        player.playerStats.currency = 0;
         tempGameData.currency = 0;
-        //tempGameData.breakResistMana = false;
+
+        player.playerStats.currency = 0;
+        player.playerStats.haveDied = true;
+
         enemiesAllScene.ReviveAllEnemy();
 
         SaveManager.instance.SaveGame();
-        PlayScreenUI.instance.DeactiveDeathUI();
-        //PlayScreenUI.instance.startResistManaCoroutine = false;
-        if (PlayScreenUI.instance.resistManaBar.localScale.y == 2.4f && PlayScreenUI.instance.currencyValueUI == Player.Instance.playerStats.currency) {
-            LoadingScene.instance.gameObject.SetActive(true);
-            LoadingScene.instance.FadeIn();
-            player.playerStats.Resting();
-            Invoke("LoadScene", .5f);
-        }
     }
     private void LoadScene() => SceneManager.LoadScene(tempGameData.currentScene);
     public void BackToMainMenu()

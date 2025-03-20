@@ -20,8 +20,9 @@ public class ArmorialUI : InventoryLogic
     [SerializeField] private Transform unEquipText;
 
     
-    protected void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         if (Instance != null)
             Destroy(gameObject);
         else
@@ -30,12 +31,12 @@ public class ArmorialUI : InventoryLogic
     protected override void LoadData()
     {
         base.LoadData();
-        if(SaveManager.instance.tempGameData.amorialHadItems != null)
-            hadItems = SaveManager.instance.tempGameData.amorialHadItems;
-        if(SaveManager.instance.tempGameData.amorialEquippedItems != null)
-            equippedItems = SaveManager.instance.tempGameData.amorialEquippedItems;
-        if (SaveManager.instance.tempGameData.newArmorialItems != null)
-            newItems = SaveManager.instance.tempGameData.newArmorialItems;
+        if(tempGameData.amorialHadItems != null)
+            hadItems = tempGameData.amorialHadItems;
+        if(tempGameData.amorialEquippedItems != null)
+            equippedItems = tempGameData.amorialEquippedItems;
+        if (tempGameData.newArmorialItems != null)
+            newItems = tempGameData.newArmorialItems;
     }
     protected override void Start()
     {
@@ -52,7 +53,7 @@ public class ArmorialUI : InventoryLogic
         {
             equippedArmorialSlot[i].gameObject.SetActive(false);
         }
-        for (int i=0; i<SaveManager.instance.tempGameData.currenArmorialSlot; i++)
+        for (int i=0; i<tempGameData.currenArmorialSlot; i++)
         {
             equippedArmorialSlot[i].gameObject.SetActive(true);
         }
@@ -61,20 +62,15 @@ public class ArmorialUI : InventoryLogic
             ActivateEquipButton();
         }
     }
-    //public override void LoadHadItemUI()
-    //{
-    //    base.LoadHadItemUI();
-    //    DeactiveEquippedItemOnHadItem();
-    //}
     public override void AddNewItemSign()
     {
         base.AddNewItemSign();
-        SaveManager.instance.tempGameData.newArmorialItems = this.newItems;
+        tempGameData.newArmorialItems = this.newItems;
     }
     protected override void RemoveNewSign(Image _image)
     {
         base.RemoveNewSign(_image);
-        SaveManager.instance.tempGameData.newArmorialItems = this.newItems;
+        tempGameData.newArmorialItems = this.newItems;
     }
     private void DeactivateEquipButton()
     {
@@ -140,7 +136,7 @@ public class ArmorialUI : InventoryLogic
             selectImage.transform.position = new Vector2(image.transform.position.x, image.transform.position.y + selectImageOffSetYWithHadItem);
             selectImage.transform.localScale = new Vector2(3.67f, 3.65f);
             DeactivateUnEquipButton();
-            if (numOfEquippedItem < SaveManager.instance.tempGameData.currenArmorialSlot)
+            if (numOfEquippedItem < tempGameData.currenArmorialSlot)
                 ActivateEquipButton();
             else
                 DeactivateEquipButton();
@@ -179,7 +175,7 @@ public class ArmorialUI : InventoryLogic
                 break;
             }
         }
-        if (!canEquip || cnt >= SaveManager.instance.tempGameData.currenArmorialSlot)
+        if (!canEquip || cnt >= tempGameData.currenArmorialSlot)
             return;
         foreach(Image image in itemHadImage)
         {
@@ -223,7 +219,7 @@ public class ArmorialUI : InventoryLogic
             return;
         Debug.Log($"Unequip {selectedItemImage.sprite.name} Succesful");
         int itemIndex = Inventory.Instance.GetItemIndexBySprite(ItemType.Armorial, selectedItemImage.sprite);
-        int index = SaveManager.instance.tempGameData.amorialHadItems.IndexOf(itemIndex);
+        int index = tempGameData.amorialHadItems.IndexOf(itemIndex);
         Image image = itemHadImage[index];
         image.sprite = selectedItemImage.sprite;
         image.color = new Color(image.color.r, image.color.g, image.color.b, 1f);

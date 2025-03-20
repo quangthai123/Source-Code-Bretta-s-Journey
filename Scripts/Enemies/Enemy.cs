@@ -20,6 +20,8 @@ public class Enemy : Entity
     public bool canBeHitByCounterAttack = false;
     public bool isAttacking = false;
     [HideInInspector] public EntityFx entityFx;
+    //protected Transform followEnemyFx;
+    //protected Vector3 followEnemyFxOffset;
     [Header("AI Infor")]
     public float actionMinTime;
     public float actionMaxTime;
@@ -63,6 +65,14 @@ public class Enemy : Entity
         isDead = enemyStats.currentHealth == 0;
         CheckDeath();
     }
+    //private void LateUpdate()
+    //{
+    //    if(followEnemyFx != null)
+    //    {
+    //        if (followEnemyFx.gameObject.activeInHierarchy)
+    //            followEnemyFx.position = transform.position - followEnemyFxOffset;
+    //    }
+    //}
     public override void Flip()
     {
         base.Flip();
@@ -108,12 +118,15 @@ public class Enemy : Entity
             }
         }
     }
-    public void GetDamage(int attackWeight, float _damage)
+    public void GetDamage(int attackWeight, float _damage, Vector3 spawnFxPos)
     {
         if(enemyHpBar != null)
             enemyHpBar.ShowHpBarOnBeDamaged();
         enemyStats.GetDamageStat(_damage);
-        if(enemyStats.currentHealth < 1)
+        Quaternion randomRotation = Quaternion.Euler(0f, 0f, UnityEngine.Random.Range(0f, 360f));
+        PlayerEffectSpawner.instance.Spawn(PlayerEffectSpawner.instance.attackImpactFx2, spawnFxPos, randomRotation);
+        //followEnemyFxOffset = transform.position - spawnFxPos;
+        if (enemyStats.currentHealth < 1)
             return;
         entityFx.StartCoroutine(entityFx.FlashFX());
     }

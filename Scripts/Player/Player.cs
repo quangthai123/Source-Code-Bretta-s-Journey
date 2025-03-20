@@ -50,6 +50,7 @@ public class Player : Entity
     public PlayerChargingState chargingState { get; private set; }
     public PlayerChargedAttackState chargedAttackState { get; private set; }
     public PlayerDashAttackState dashAttackState { get; private set; }
+    public PlayerMagicSkill1State magicSkill1State { get; private set; }
     #endregion
     [SerializeField] protected Transform groundCheckPos1;
     [SerializeField] protected Transform groundCheckPos2;
@@ -208,6 +209,7 @@ public class Player : Entity
         chargingState = new PlayerChargingState(this, stateMachine, "Charged");
         chargedAttackState = new PlayerChargedAttackState(this, stateMachine, "ChargedAttack");
         dashAttackState = new PlayerDashAttackState(this, stateMachine, "DashAttack");
+        magicSkill1State = new PlayerMagicSkill1State(this, stateMachine, "Magic1");
 
         playerStats = GetComponent<PlayerStats>();
         playerStatsWithItems = GetComponent<PlayerStatsWithItems>();
@@ -387,6 +389,27 @@ public class Player : Entity
     {
         bool hitSomething = false;
         Collider2D[] hits = Physics2D.OverlapCircleAll(attackPointPos.position, attackRangeRadius, opponentLayer);
+        if (hits.Length <= 0)
+            AudioManager.instance.PlaySFX(5);
+        else if(stateMachine.currentState != counterAttackState)
+        {
+            switch(attackWeight)
+            {
+                case 0:
+                    AudioManager.instance.PlaySFX(6);
+                    break;
+                case 1:
+                    AudioManager.instance.PlaySFX(15);
+                    break;
+                case 2:
+                    AudioManager.instance.PlaySFX(16);
+                    break;
+                default:
+                    AudioManager.instance.PlaySFX(17);
+                    break;
+            }
+
+        }
         foreach (Collider2D hit in hits)
         {
             if (hit.GetComponentInParent<Enemy>() != null)
@@ -395,7 +418,8 @@ public class Player : Entity
                 hitSomething = true;
                 hitEnemy = true;
                 playerStats.GetManaByAttack();
-                hit.GetComponentInParent<Enemy>().GetDamage(attackWeight, _damage);
+                Vector2 spawnFxPos = hit.ClosestPoint(attackPointPos.position);
+                hit.GetComponentInParent<Enemy>().GetDamage(attackWeight, _damage, spawnFxPos);
             }
             else if (hit.GetComponentInParent<PlayerSoulController>() != null)
             {
@@ -419,24 +443,24 @@ public class Player : Entity
         CreateShakeFxByAttack(attackWeight, hitSomething);
     }
 
-    private void SpawnAttackImpactFx(Collider2D hit, int attackWeight)
+    public void SpawnAttackImpactFx(Collider2D hit, int attackWeight)
     {
         Vector2 closestPoint = hit.ClosestPoint(attackPointPos.position);
         Vector2 spawnFxPos = new Vector2(closestPoint.x + facingDir * .75f, closestPoint.y);
-        Quaternion randomRotation = Quaternion.Euler(0f, 0f, Random.Range(0f, 360f));
+        //Quaternion randomRotation = Quaternion.Euler(0f, 0f, Random.Range(0f, 360f));
         switch (attackWeight)
         {
             case 1:
                 PlayerEffectSpawner.instance.Spawn(PlayerEffectSpawner.instance.attackImpactFx, spawnFxPos, Quaternion.Euler(0f, 0f, 50f));
-                PlayerEffectSpawner.instance.Spawn(PlayerEffectSpawner.instance.attackImpactFx2, spawnFxPos, randomRotation);
+                //PlayerEffectSpawner.instance.Spawn(PlayerEffectSpawner.instance.attackImpactFx2, spawnFxPos, randomRotation);
                 break;
             case 2:
                 PlayerEffectSpawner.instance.Spawn(PlayerEffectSpawner.instance.attackImpactFx, spawnFxPos, Quaternion.identity);
-                PlayerEffectSpawner.instance.Spawn(PlayerEffectSpawner.instance.attackImpactFx2, spawnFxPos, Quaternion.identity);
+                //PlayerEffectSpawner.instance.Spawn(PlayerEffectSpawner.instance.attackImpactFx2, spawnFxPos, Quaternion.identity);
                 break;
             default:
                 PlayerEffectSpawner.instance.Spawn(PlayerEffectSpawner.instance.attackImpactFx, spawnFxPos, Quaternion.Euler(0f, 0f, -50f));
-                PlayerEffectSpawner.instance.Spawn(PlayerEffectSpawner.instance.attackImpactFx2, spawnFxPos, randomRotation);
+                //PlayerEffectSpawner.instance.Spawn(PlayerEffectSpawner.instance.attackImpactFx2, spawnFxPos, randomRotation);
                 break;
         }
     }
@@ -486,6 +510,7 @@ public class Player : Entity
                     GameManager.Instance.CreateScreenShakeFx(new Vector2(-1f, 0f));
                 else
                     GameManager.Instance.CreateScreenShakeFx(new Vector2(1f, 0f));
+                AudioManager.instance.PlaySFX(10);
                 return;
             }
             entityFx.StartCoroutine("FlashFX");
@@ -507,6 +532,8 @@ public class Player : Entity
             return;
         }
         entityFx.StartCoroutine("FlashFX");
+        if(!isDeathDamage)
+            AudioManager.instance.PlaySFX(7);
         HitKnockback(opponentTransform, attackWeight);
         if (opponentTransform.GetComponentInParent<Enemy>() != null)
         {
@@ -529,6 +556,11 @@ public class Player : Entity
             isCooldownHurt = true;
             CancelInvoke("EndCooldownHurt");
             Invoke("EndCooldownHurt", 1f);
+            return;
+        }
+        if(isDeathDamage)
+        {
+            stateMachine.ChangeState(deathState);
             return;
         }
         if (attackWeight == 0)

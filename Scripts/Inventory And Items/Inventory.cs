@@ -10,6 +10,7 @@ public class Inventory : MonoBehaviour
     public List<Item> allArmorialItemsList;
     public List<Item> allImportantItemsList;
     public List<Item> allSwordPieceItemsList;
+    public List<Item> allMagicGemItemsList;
     public List<PerfectSwordSO> allPerfectSwordList; 
 
     public List<int> amorialHadItems;
@@ -67,7 +68,7 @@ public class Inventory : MonoBehaviour
         if (itemType == ItemType.Important)
         {
             importantHadItems.Add(itemIndex);
-            SaveManager.instance.tempGameData.importantHadItems = importantHadItems;
+            tempGameData.importantHadItems = importantHadItems;
             ImportantItemUI.Instance.AddNewItemSign();
             ImportantItemUI.Instance.LoadHadItemUI();
             ImportantItemUI.Instance.DeactiveSelectNullImageOnPickupNewItem();
@@ -75,7 +76,7 @@ public class Inventory : MonoBehaviour
         else if (itemType == ItemType.Armorial)
         {
             amorialHadItems.Add(itemIndex);
-            SaveManager.instance.tempGameData.amorialHadItems = amorialHadItems;
+            tempGameData.amorialHadItems = amorialHadItems;
             ArmorialUI.Instance.AddNewItemSign();
             ArmorialUI.Instance.LoadHadItemUI();
             ArmorialUI.Instance.DeactiveSelectNullImageOnPickupNewItem();
@@ -83,15 +84,21 @@ public class Inventory : MonoBehaviour
         else if (itemType == ItemType.SwordPiece)
         {
             swordPieceHadItems.Add(itemIndex);
-            SaveManager.instance.tempGameData.swordPieceHadItems = swordPieceHadItems;
+            tempGameData.swordPieceHadItems = swordPieceHadItems;
             SwordPieceUI.Instance.LoadHadItemUI();
             SwordPieceUI.Instance.AddNewItemSign();
             SwordPieceUI.Instance.DeactiveSelectNullImageOnPickupNewItem();
+        } else 
+        { 
+            tempGameData.magicGemHadItems.Add(itemIndex);
+            MagicSkillUI.Instance.AddNewItemSign();
+            MagicSkillUI.Instance.LoadHadItemUI();
+            MagicSkillUI.Instance.DeactiveSelectNullImageOnPickupNewItem();
         }
     }
     public Sprite GetSpriteByItemIndex(ItemType type, int index)
     {
-        if(type == ItemType.Important) 
+        if (type == ItemType.Important)
         {
             foreach (Item item in allImportantItemsList)
             {
@@ -99,12 +106,12 @@ public class Inventory : MonoBehaviour
                     return item.itemImage.sprite;
             }
         }
-        else if(type == ItemType.Armorial)
-        { 
-            foreach(Item item in allArmorialItemsList) 
+        else if (type == ItemType.Armorial)
+        {
+            foreach (Item item in allArmorialItemsList)
             {
                 if (item.itemIndex == index)
-                return item.itemImage.sprite;
+                    return item.itemImage.sprite;
             }
         }
         else if (type == ItemType.SwordPiece)
@@ -121,6 +128,13 @@ public class Inventory : MonoBehaviour
             {
                 if (item.index == index)
                     return item.image;
+            }
+        } else 
+        {
+            foreach (Item item in allMagicGemItemsList)
+            {
+                if (item.itemIndex == index)
+                    return item.itemImage.sprite;
             }
         }
         return null;
@@ -155,16 +169,25 @@ public class Inventory : MonoBehaviour
                     }
                 }
             break;
+            case ItemType.MagicGem:
+                foreach (Item item in allMagicGemItemsList)
+                {
+                    if (item.itemImage.sprite == sprite)
+                    {
+                        return item.itemIndex;
+                    }
+                }
+            break;
         }
         return -1;
     }
     public bool CheckSelectedItemIsEquipped(ItemType itemType, Sprite sprite)
     {
         int index = GetItemIndexBySprite(itemType, sprite);
-        if(SaveManager.instance.tempGameData.amorialEquippedItems == null || 
-            SaveManager.instance.tempGameData.amorialEquippedItems.Count < 1)
+        if(tempGameData.amorialEquippedItems == null || 
+            tempGameData.amorialEquippedItems.Count < 1)
             return false;
-        foreach(int i in SaveManager.instance.tempGameData.amorialEquippedItems)
+        foreach(int i in tempGameData.amorialEquippedItems)
         {
             if(index == i) 
                 return true;
@@ -183,7 +206,7 @@ public class Inventory : MonoBehaviour
             }
             cnt++;
         }
-        SaveManager.instance.tempGameData.amorialEquippedItems = amorialEquippedItems;
+        tempGameData.amorialEquippedItems = amorialEquippedItems;
         Player.Instance.playerStatsWithItems.EquipArmorial(index);
     }
     public void UnequipArmorial(int index)
@@ -198,18 +221,17 @@ public class Inventory : MonoBehaviour
             }
             cnt++;
         }
-        SaveManager.instance.tempGameData.amorialEquippedItems = amorialEquippedItems;
+        tempGameData.amorialEquippedItems = amorialEquippedItems;
         Player.Instance.playerStatsWithItems.UnequipArmorial(index);
     }
     public void EquipSwordPiece(int swordPieceindex, int index)
     {
         swordPieceEquippedItems[index] = swordPieceindex;
-        SaveManager.instance.tempGameData.swordPieceEquippedItems = swordPieceEquippedItems;
+        tempGameData.swordPieceEquippedItems = swordPieceEquippedItems;
     }
     public void UnequipSwordPiece(int index)
     {
         swordPieceEquippedItems[index] = -1;
-        SaveManager.instance.tempGameData.swordPieceEquippedItems = swordPieceEquippedItems;
-        //Player.Instance.playerStatsWithItems.UnequipArmorial(index);
+        tempGameData.swordPieceEquippedItems = swordPieceEquippedItems;
     }
 }

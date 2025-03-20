@@ -113,9 +113,11 @@ public class SwordSkillUI : MonoBehaviour
             }
         }
         Player.Instance.playerStats.currency -= swordSkillData[currentSelectedSkillIndex].upgradeCost;
-        SaveManager.instance.tempGameData.currency = Player.Instance.playerStats.currency;
+        tempGameDatas.currency = Player.Instance.playerStats.currency;
         learnBtn.gameObject.SetActive(false);
         tempGameDatas.learnedSkill[currentSelectedSkillIndex] = true;
         LoadLearnedSkill();
+        if(currentSelectedSkillIndex == 9)
+            GetComponent<MagicSkillUI>().LockGemSlot2Image.SetActive(false);
     }
 }

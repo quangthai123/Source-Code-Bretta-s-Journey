@@ -58,10 +58,12 @@ public class PlayerOnGroundState : PlayerStates
             else
                 stateMachine.ChangeState(player.pickupState);
         }
-        if ((Input.GetKeyDown(KeyCode.Q) || InputManager.Instance.usedSkill) && SaveManager.instance.tempGameData.learnedSkill[9]) 
+        if ((Input.GetKeyDown(KeyCode.Q) || InputManager.Instance.usedSkill) && SaveManager.instance.tempGameData.magicGemEquippedItems != null) 
         {
-            if(SkillManager.instance.CanUseSkill())
-                stateMachine.ChangeState(player.magicState);
+            if (SaveManager.instance.tempGameData.magicGemEquippedItems[0] == -1)
+                return;
+            if(SkillManager.instance.CanUseSkillSlot1())
+                stateMachine.ChangeState(player.magicSkill1State);
             else 
                 PlayScreenUI.instance.IndicateWhenOutOfManaToUseSkill();
         }

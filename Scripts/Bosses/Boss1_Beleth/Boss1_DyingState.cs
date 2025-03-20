@@ -17,6 +17,7 @@ public class Boss1_DyingState : EnemyStates
         enemy.FinishBossSlowMotionFx();
         player.RedFxOnFinishBoss();     
         enemy.RedFxOnFinishBoss();
+        AudioManager.instance.StopAllBGM();
         SaveManager.instance.tempGameData.winBoss1 = true;
     }
     public override void Exit()

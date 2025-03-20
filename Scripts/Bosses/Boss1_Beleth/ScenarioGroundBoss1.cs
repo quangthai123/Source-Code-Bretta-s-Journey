@@ -90,6 +90,7 @@ public class ScenarioGroundBoss1 : MonoBehaviour
     {
         GameManager.Instance.ShowAllInGameUI();
         boss1.GetComponent<Boss1>().startBoss1Phase = true;
+        AudioManager.instance.PlayBGM(0);
     }
     private void ShowBoss1HpBar()
     {

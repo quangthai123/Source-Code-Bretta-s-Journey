@@ -14,6 +14,7 @@ public class PlayerDoubleJumpState : PlayerStates
         player.canGrabLedge = true;
         stateDuration = player.jumpDuration;
         rb.velocity = new Vector2(rb.velocity.x, player.jumpForce);
+        AudioManager.instance.PlaySFX(1);
         if (!player.canLadder)
             PlayerEffectSpawner.instance.Spawn("doubleJumpFx", player.centerEffectPos.position, Quaternion.identity);
     }
@@ -59,5 +60,14 @@ public class PlayerDoubleJumpState : PlayerStates
             stateMachine.ChangeState(player.airDashState);
         if (player.CheckWalled() && !player.CheckGrounded() && (Input.GetKeyDown(KeyCode.K) || InputManager.Instance.attacked))
             stateMachine.ChangeState(player.wallSlideState);
+        if ((Input.GetKeyDown(KeyCode.Q) || InputManager.Instance.usedSkill) && SaveManager.instance.tempGameData.magicGemEquippedItems != null)
+        {
+            if (SaveManager.instance.tempGameData.magicGemEquippedItems[0] == -1)
+                return;
+            if (SkillManager.instance.CanUseSkillSlot1())
+                stateMachine.ChangeState(player.magicSkill1State);
+            else
+                PlayScreenUI.instance.IndicateWhenOutOfManaToUseSkill();
+        }
     }
 }

@@ -14,6 +14,7 @@ public class PlayerShieldState : PlayerStates
         stateDuration = player.shieldDuration;
         player.knockFlip = true;
         player.isShielding = true;
+        AudioManager.instance.PlaySFX(9);
     }
     public override void Exit()
     {

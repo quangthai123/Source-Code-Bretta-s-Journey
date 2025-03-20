@@ -111,6 +111,7 @@ public class PlayerStats : MonoBehaviour
     }
     public void Resting()
     {
+        Debug.LogError("Resting!!!");
         currentHealth = maxHealth.GetValue();
         tempGameData.currentHealth = (int)currentHealth;
         RefillAllFlask();

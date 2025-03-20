@@ -78,6 +78,7 @@ public class SaveManager : MonoBehaviour
     }
     private void LoadScene()
     {
+        tempGameData.preShowInterstitialTime = tempGameData.playedTime;
         SceneManager.LoadSceneAsync(tempGameData.currentScene);
     }
     public void DeleteSaveSlot1()

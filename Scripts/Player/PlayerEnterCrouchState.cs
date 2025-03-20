@@ -12,6 +12,7 @@ public class PlayerEnterCrouchState : PlayerStates
     {
         base.Start();
         rb.velocity = Vector2.zero;
+        MobileInputTesting.Instance.CanEnableMagicBtnToUseMagicSkill2();
     }
     public override void Exit()
     {
@@ -41,6 +42,15 @@ public class PlayerEnterCrouchState : PlayerStates
         {
             if(InputManager.Instance.moveDir.y != -1)
                 stateMachine.ChangeState(player.exitCrouchState);
+        }
+        if ((Input.GetKeyDown(KeyCode.Q) || InputManager.Instance.usedSkill) && SaveManager.instance.tempGameData.magicGemEquippedItems != null)
+        {
+            if (SaveManager.instance.tempGameData.magicGemEquippedItems[1] == -1)
+                return;
+            if (SkillManager.instance.CanUseSkillSlot2())
+                stateMachine.ChangeState(player.magicState);
+            else
+                PlayScreenUI.instance.IndicateWhenOutOfManaToUseSkill();
         }
     }
 }

@@ -47,7 +47,7 @@ public class PlayerAnimationController : MonoBehaviour
     }
     private void SpawnRunEffect()
     {
-        //AudioManager.instance.PlaySFX(0);
+        AudioManager.instance.PlaySFX(0);
         if (!player.CheckSlope())
             PlayerEffectSpawner.instance.Spawn("runFx", Player.Instance.leftEffectPos.position, Quaternion.identity);
     }
@@ -109,7 +109,7 @@ public class PlayerAnimationController : MonoBehaviour
     }
     private void UseMagicSkill()
     {
-        SkillManager.instance.UseSkill();
+        SkillManager.instance.UseSkillSlot1();
     }
     private void SpawnDustFxOnBreakRun()
     {
@@ -120,5 +120,11 @@ public class PlayerAnimationController : MonoBehaviour
     private void SpawnDustFxOnChargedAttack()
     {
         PlayerEffectSpawner.instance.Spawn("endDashFx", player.leftEffectPos.position + new Vector3(-.5f * player.facingDir, 0f, 0f), Quaternion.identity);
+    }
+    private void PlayAttackNotEnemySound() => AudioManager.instance.PlaySFX(5);
+    private void ChangeToFallStateAfterMagic1State()
+    {
+        if(!player.CheckGrounded() && !player.CheckJumpOnSlope())
+            player.stateMachine.ChangeState(player.fallState);
     }
 }

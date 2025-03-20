@@ -8,8 +8,9 @@ public class ImportantItemUI : InventoryLogic
 {
     public static ImportantItemUI Instance;
     private bool isUpdating = false; // for upgrade player stats on this UI 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         if (Instance != null)
             Destroy(gameObject);
         else
@@ -18,10 +19,10 @@ public class ImportantItemUI : InventoryLogic
     protected override void LoadData()
     {
         base.LoadData();
-        if (SaveManager.instance.tempGameData.importantHadItems != null)
-            hadItems = SaveManager.instance.tempGameData.importantHadItems;
-        if (SaveManager.instance.tempGameData.newImportantItems != null)
-            newItems = SaveManager.instance.tempGameData.newImportantItems;
+        if (tempGameData.importantHadItems != null)
+            hadItems = tempGameData.importantHadItems;
+        if (tempGameData.newImportantItems != null)
+            newItems = tempGameData.newImportantItems;
     }
     protected override void Start()
     {
@@ -31,7 +32,7 @@ public class ImportantItemUI : InventoryLogic
     public override void AddNewItemSign()
     {
         base.AddNewItemSign();
-        SaveManager.instance.tempGameData.newImportantItems = this.newItems;
+        tempGameData.newImportantItems = this.newItems;
     }
     protected override void LoadNewItemsSign()
     {
@@ -101,7 +102,7 @@ public class ImportantItemUI : InventoryLogic
                     newItems[i]--;
             }
         }
-        SaveManager.instance.tempGameData.newImportantItems = this.newItems;
+        tempGameData.newImportantItems = this.newItems;
         if (newItems.Count < 1)
             InventoryUI.Instance.RemoveNewSignOnTab(tabIndex);
     }

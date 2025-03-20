@@ -17,6 +17,7 @@ public class PlayerHealState : PlayerStates
             player.anim.speed = 1.8f;
         if(player.playerStatsWithItems.CheckEquippedArmorial(7))
             player.isKnocked = true;
+        AudioManager.instance.PlaySFX(8);
         //player.transform.GetComponentInc<SpriteRenderer>().sortingLayerID = 4;
     }
     public override void Exit()

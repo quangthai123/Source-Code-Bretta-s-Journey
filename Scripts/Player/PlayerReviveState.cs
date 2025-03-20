@@ -18,6 +18,7 @@ public class PlayerReviveState : PlayerStates
     {
         base.Exit();
         player.isKnocked = false;
+        //Interstitial.Instance.PreLoadNextInterstitialAd();
     }
 
 

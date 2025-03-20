@@ -30,6 +30,11 @@ public abstract class InventoryLogic : MonoBehaviour
     [SerializeField] protected GameObject newSignImage;
     [SerializeField] protected Vector2 newSignImagePos = new Vector2(34.54f, 34.54f);
     [SerializeField] protected List<int> newItems; // cac item da nhat nhung nguoi choi chua xem va co ky hieu ! 
+    protected GameDatas tempGameData;
+    protected virtual void Awake()
+    {
+        tempGameData = Resources.Load<GameDatas>("TempGameData");
+    }
     protected virtual void Start()
     {
         LoadData();

@@ -6,6 +6,7 @@ public class PlayerSkillSpawner : Spawner
 {
     public static PlayerSkillSpawner Instance;
     public string skill0_Wood = "Skill0_Wood";
+    public string skillMulti_Blood = "SkillMulti_Blood";
     protected override void Awake()
     {
         if (Instance != null)

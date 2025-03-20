@@ -5,6 +5,7 @@ using UnityEngine;
 public class SkillDespawn : MonoBehaviour
 {
     public bool canFlip;
+    public bool canDespawbyTime;
     public bool wrongDirWhenSpawn = false;
     public float despawnTime;
     private float despawnTimeCounter;
@@ -20,7 +21,7 @@ public class SkillDespawn : MonoBehaviour
     {
         if(despawnTimeCounter > 0)
             despawnTimeCounter -= Time.deltaTime;
-        if(despawnTimeCounter <= 0)
+        if(despawnTimeCounter <= 0 && canDespawbyTime)
             PlayerSkillSpawner.Instance.Despawn(transform);
     }
     private void DespawnAfterFinishAnim()

@@ -19,6 +19,7 @@ public class PlayerCrouchState : PlayerStates
         base.Exit();
         player.normalCol.SetActive(true);
         player.dashCol.SetActive(false);
+        MobileInputTesting.Instance.SetStateOfMagicBtn();
     }
 
 
@@ -49,6 +50,15 @@ public class PlayerCrouchState : PlayerStates
         {
             player.dashTimer = Time.time;
             stateMachine.ChangeState(player.dashState);
+        }
+        if ((Input.GetKeyDown(KeyCode.Q) || InputManager.Instance.usedSkill) && SaveManager.instance.tempGameData.magicGemEquippedItems != null)
+        {
+            if (SaveManager.instance.tempGameData.magicGemEquippedItems[1] == -1)
+                return;
+            if (SkillManager.instance.CanUseSkillSlot2())
+                stateMachine.ChangeState(player.magicState);
+            else
+                PlayScreenUI.instance.IndicateWhenOutOfManaToUseSkill();
         }
     }
 }

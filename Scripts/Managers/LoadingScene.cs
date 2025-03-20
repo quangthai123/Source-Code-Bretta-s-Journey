@@ -29,4 +29,9 @@ public class LoadingScene : MonoBehaviour
     {
         gameObject.SetActive(false);
     }
+    public void StartFadeIn()
+    {
+        gameObject.SetActive(true);
+        FadeIn();
+    }
 }

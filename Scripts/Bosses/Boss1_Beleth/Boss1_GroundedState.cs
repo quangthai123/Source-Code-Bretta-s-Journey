@@ -17,6 +17,7 @@ public class Boss1_GroundedState : EnemyStates
         groundedFx = BossEffectSpawner.Instance.Spawn(BossEffectSpawner.Instance.boss1_heavyGroundedFx, enemy.spawnGroundedFxPos.position, Quaternion.identity);
         enemy.canResetSkillCountForAttack2 = true;
         GameManager.Instance.CreateScreenShakeFx(GameManager.Instance.strongEarthQuake);
+        AudioManager.instance.PlaySFX(19);
     }
     public override void Exit()
     {

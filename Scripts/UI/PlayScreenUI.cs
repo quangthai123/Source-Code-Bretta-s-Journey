@@ -56,6 +56,10 @@ public class PlayScreenUI : MonoBehaviour
         resistManaBar.gameObject.SetActive(true);
         resistManaBar2.gameObject.SetActive(true);
     }
+    private void OnEnable()
+    {
+        Observer.AddListener(GameEvent.OnResetGame, this.OnResetGame);
+    }
     private void Start()
     {
         playerStats = Player.Instance.playerStats;
@@ -77,6 +81,7 @@ public class PlayScreenUI : MonoBehaviour
             amountOfResistManaPerSecond = 0;
         }
         InvokeRepeating("GetFrameRate", .5f, .5f);
+
     }
     void Update()
     {
@@ -114,9 +119,9 @@ public class PlayScreenUI : MonoBehaviour
             Debug.Log("Load lai scene bang playscreenUI script");
             finishDeductCurrencyUI = false;
             finishManaResist = false;
-            LoadingScene.instance.gameObject.SetActive(true);
-            LoadingScene.instance.FadeIn();
+            LoadingScene.instance.StartFadeIn();
             Player.Instance.playerStats.Resting();
+            Player.Instance.isKnocked = true;
             Invoke("LoadScene", .5f);
         }
     }
@@ -230,4 +235,19 @@ public class PlayScreenUI : MonoBehaviour
         }
         indicatedNotEnoughMana = false;
     }
+    private void OnResetGame(object[] datas)
+    {
+        DeactiveDeathUI();
+        finishManaResist = false;
+        finishDeductCurrencyUI = false;
+        if (resistManaBar.localScale.y == 2.4f && currencyValueUI == Player.Instance.playerStats.currency) 
+        {
+            LoadingScene.instance.StartFadeIn();
+            Player.Instance.playerStats.Resting();
+            Player.Instance.isKnocked = true;
+            Invoke("LoadScene", .5f);
+        }
+    }
+    private void OnDisable() => Observer.RemoveListener(GameEvent.OnResetGame, this.OnResetGame);
+    private void OnDestroy() => Observer.RemoveListener(GameEvent.OnResetGame, this.OnResetGame);
 }

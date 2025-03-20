@@ -32,7 +32,7 @@ public class PlayerLightGroundedState : PlayerOnGroundState
         {
             if (horizontalInput != 0 && !Input.GetKeyDown(KeyCode.J) && !Input.GetKeyDown(KeyCode.K) && !Input.GetKeyDown(KeyCode.F)
                 && !(Input.GetKeyDown(KeyCode.LeftShift) && Time.time - player.dashTimer > player.dashCooldown) && !(player.CheckGrounded() && Input.GetKey(KeyCode.Space) && !player.canLadder) && !(Input.GetKey(KeyCode.S) && !player.canLadder)
-                && !(Input.GetKeyDown(KeyCode.Q) && SkillManager.instance.CanUseSkill()))
+                && !(Input.GetKeyDown(KeyCode.Q) && SkillManager.instance.CanUseSkillSlot1()))
             {
                 stateMachine.ChangeState(player.enterRunState);
             }
@@ -41,7 +41,7 @@ public class PlayerLightGroundedState : PlayerOnGroundState
         {
             if (InputManager.Instance.moveDir.x != 0 && !InputManager.Instance.parried && !InputManager.Instance.attacked && !InputManager.Instance.healed
                 && !(InputManager.Instance.dashed && Time.time - player.dashTimer > player.dashCooldown) && !(player.CheckGrounded() && InputManager.Instance.jumped && !player.canLadder) && !(InputManager.Instance.moveDir.y == -1 && !player.canLadder)
-                && !(InputManager.Instance.usedSkill && SkillManager.instance.CanUseSkill()))
+                && !(InputManager.Instance.usedSkill && SkillManager.instance.CanUseSkillSlot1()))
             {
                 stateMachine.ChangeState(player.enterRunState);
             }

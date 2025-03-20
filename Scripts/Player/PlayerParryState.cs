@@ -17,14 +17,9 @@ public class PlayerParryState : PlayerStates
         else
             stateDuration = player.strongParryDuration;
         spawnParryEffectTimer = player.spawnParryEffectCooldown;
+        AudioManager.instance.PlaySFX(12);
+        AudioManager.instance.PlaySFX(13);
         PlayerEffectSpawner.instance.Spawn(PlayerEffectSpawner.instance.parryEffect, player.centerEffectPos.position, Quaternion.identity);
-        //if(!player.isStrongStrike)
-        //    PlayerEffectSpawner.instance.Spawn(PlayerEffectSpawner.instance.flashParryEffect, player.shieldEffectPos.position, Quaternion.identity);
-        //else
-        //{
-        //    PlayerEffectSpawner.instance.Spawn(PlayerEffectSpawner.instance.strongParryEffect, player.shieldEffectPos.position, Quaternion.identity);
-        //    PlayerEffectSpawner.instance.Spawn(PlayerEffectSpawner.instance.flashParryEffect2, player.shieldEffectPos.position, Quaternion.identity);
-        //}
         Vector2 spawnStrongParryFxPos = new Vector2(player.shieldEffectPos.position.x - player.facingDir * 1.5f, player.shieldEffectPos.position.y);
         PlayerEffectSpawner.instance.Spawn(PlayerEffectSpawner.instance.parryEffect, player.centerEffectPos.position, Quaternion.identity);
         PlayerEffectSpawner.instance.Spawn(PlayerEffectSpawner.instance.strongParryEffect, spawnStrongParryFxPos, Quaternion.identity);

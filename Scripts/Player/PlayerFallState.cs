@@ -41,6 +41,7 @@ public class PlayerFallState : PlayerAirState
                 } else
                 {
                     PlayerEffectSpawner.instance.Spawn("lightGroundedFx", player.centerEffectPos.position, Quaternion.identity);
+                    AudioManager.instance.PlaySFX(3);
                     if (horizontalInput == 0 && InputManager.Instance.moveDir.x == 0)
                         stateMachine.ChangeState(player.lightGroundedState);
                     else

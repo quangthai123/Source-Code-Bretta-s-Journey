@@ -10,7 +10,7 @@ public class PlayerJumpState : PlayerAirState
     public override void Start()
     {
         base.Start();
-        Debug.Log("Enter Jump State");
+        AudioManager.instance.PlaySFX(1);
         rb.velocity = new Vector2(rb.velocity.x, player.jumpForce);
         stateDuration = player.jumpDuration;
         if(!player.canLadder && player.CheckGrounded())

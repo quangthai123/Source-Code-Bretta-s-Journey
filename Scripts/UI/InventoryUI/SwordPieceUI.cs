@@ -37,8 +37,9 @@ public class SwordPieceUI : InventoryLogic
     public Transform perfectSwordHadUI;
     [SerializeField] private Transform swordPieceHadTab;
     [SerializeField] private Transform perfectSwordHadTab;
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         if (Instance != null)
             Destroy(gameObject);
         else
@@ -72,19 +73,19 @@ public class SwordPieceUI : InventoryLogic
     protected override void LoadData()
     {
         base.LoadData();
-        if (SaveManager.instance.tempGameData.swordPieceHadItems != null)
-            hadItems = SaveManager.instance.tempGameData.swordPieceHadItems;
-        if (SaveManager.instance.tempGameData.swordPieceEquippedItems != null)
-            equippedItems = SaveManager.instance.tempGameData.swordPieceEquippedItems;
-        if (SaveManager.instance.tempGameData.newSwordPieceItems != null)
-            newItems = SaveManager.instance.tempGameData.newSwordPieceItems;
-        currentSwordPieceSlot = SaveManager.instance.tempGameData.currentSwordPieceSlot;
+        if (tempGameData.swordPieceHadItems != null)
+            hadItems = tempGameData.swordPieceHadItems;
+        if (tempGameData.swordPieceEquippedItems != null)
+            equippedItems = tempGameData.swordPieceEquippedItems;
+        if (tempGameData.newSwordPieceItems != null)
+            newItems = tempGameData.newSwordPieceItems;
+        currentSwordPieceSlot = tempGameData.currentSwordPieceSlot;
     }
     public override void AddNewItemSign()
     {
         base.AddNewItemSign();
         newItemImages.Add(itemHadImage[hadItems.Count - 1].transform.GetChild(1).GetComponent<Image>());
-        SaveManager.instance.tempGameData.newSwordPieceItems = this.newItems;
+        tempGameData.newSwordPieceItems = this.newItems;
         LoadNewItemsSign();
     }
     protected override void RemoveNewSign(Image _image)
@@ -99,7 +100,7 @@ public class SwordPieceUI : InventoryLogic
         }
         if (newItems.Count < 1)
             InventoryUI.Instance.RemoveNewSignOnTab(tabIndex);
-        SaveManager.instance.tempGameData.newSwordPieceItems = this.newItems;
+        tempGameData.newSwordPieceItems = this.newItems;
     }
     public void ReloadNewSignsOnMergedSword()
     {
@@ -127,7 +128,7 @@ public class SwordPieceUI : InventoryLogic
             }
             newItems.Add(itemHadImage.IndexOf(item.transform.parent.GetComponent<Image>()));
         }
-        SaveManager.instance.tempGameData.newSwordPieceItems = newItems;
+        tempGameData.newSwordPieceItems = newItems;
     }
     private void LoadBigSlotByCurrentSwordPieceSlot()
     {
@@ -163,9 +164,6 @@ public class SwordPieceUI : InventoryLogic
         int cnt = 0;
         foreach (int i in hadItems)
         {
-            //Image border = itemHadImage[cnt];
-            //border.material = hadItemBorderMaterial;
-            //border.color = new Color(242f / 255f, 219f / 255f, 181f / 255f, 1f);
             itemHadImage[cnt].transform.Find("Borders").gameObject.SetActive(true);
             if (CheckEquippedItem(i))
             {
@@ -260,7 +258,7 @@ public class SwordPieceUI : InventoryLogic
             itemImage = itemHadSlot.GetChild(2).GetComponent<Image>();
         ChangeSelectedImageTransformBySelectedSwordPiece(itemImage, true);
         currentSelectHadSwordPiece = itemImage.transform;
-        if (numOfEquippedItem < SaveManager.instance.tempGameData.currentSwordPieceSlot && currentSelectEquippedSwordPieceParent != null
+        if (numOfEquippedItem < tempGameData.currentSwordPieceSlot && currentSelectEquippedSwordPieceParent != null
             && selectImage2.gameObject.activeInHierarchy)
             ActivateEquipButton();
         else
@@ -304,7 +302,7 @@ public class SwordPieceUI : InventoryLogic
                 selectedItemFunction.text = item.originalFunction;
                 int swordIndex = Inventory.Instance.GetItemIndexBySprite(ItemType.PerfectSword, itemImage.sprite);
                 int pairIndex = perfectSwordChecker.GetPairIndexByOneSwordIndex(swordIndex);
-                foreach(int pairId in SaveManager.instance.tempGameData.swordPairsActivated)
+                foreach(int pairId in tempGameData.swordPairsActivated)
                 {
                     if(pairId == pairIndex)
                     {

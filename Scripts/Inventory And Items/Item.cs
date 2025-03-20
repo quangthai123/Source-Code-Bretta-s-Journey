@@ -7,7 +7,8 @@ public enum ItemType
     Important,
     Armorial,
     SwordPiece,
-    PerfectSword
+    PerfectSword,
+    MagicGem
 }
 public class Item : MonoBehaviour
 {
@@ -32,6 +33,8 @@ public class Item : MonoBehaviour
             CheckHadThisImportantItemOrNot();
         else if (itemType == ItemType.SwordPiece)
             CheckHadThisSwordPieceOrNot();
+        else
+            CheckHadThisMagicGemOrNot();
     }
 
     private void CheckHadThisArmorialOrNot()
@@ -50,6 +53,31 @@ public class Item : MonoBehaviour
         if (SaveManager.instance.tempGameData.amorialEquippedItems != null)
         {
             foreach (int i in SaveManager.instance.tempGameData.amorialEquippedItems)
+            {
+                if (itemIndex == i)
+                {
+                    gameObject.SetActive(false);
+                    return;
+                }
+            }
+        }
+    }
+    private void CheckHadThisMagicGemOrNot()
+    {
+        if (SaveManager.instance.tempGameData.magicGemHadItems != null)
+        {
+            foreach (int i in SaveManager.instance.tempGameData.magicGemHadItems)
+            {
+                if (itemIndex == i)
+                {
+                    gameObject.SetActive(false);
+                    return;
+                }
+            }
+        }
+        if (SaveManager.instance.tempGameData.magicGemEquippedItems != null)
+        {
+            foreach (int i in SaveManager.instance.tempGameData.magicGemEquippedItems)
             {
                 if (itemIndex == i)
                 {

@@ -7,23 +7,29 @@ public class MobileInputTesting : MonoBehaviour
 {
     public static MobileInputTesting Instance;
     public bool isMobileDevice;
+    private GameObject magicBtn;
+    private GameDatas tempGameData;
     private void Awake()
     {
         if (Instance != null)
             Destroy(gameObject);
         else
             Instance = this;
-        isMobileDevice = true;
-        transform.Find("MagicSkillButton").gameObject.SetActive(false);
+        isMobileDevice = false;
+        tempGameData = Resources.Load<GameDatas>("TempGameData");
+        magicBtn = transform.Find("MagicSkillButton").gameObject;
+        SetStateOfMagicBtn();
     }
-    private void Start()
+    public void SetStateOfMagicBtn()
     {
-        if (SaveManager.instance.tempGameData.learnedSkill[9])
-            transform.Find("MagicSkillButton").gameObject.SetActive(true);
+        if (tempGameData.magicGemEquippedItems[0] != -1)
+            magicBtn.SetActive(true);
+        else
+            magicBtn.SetActive(false);
     }
-    private void Update()
+    public void CanEnableMagicBtnToUseMagicSkill2()
     {
-        if (SaveManager.instance.tempGameData.learnedSkill[9] && !transform.Find("MagicSkillButton").gameObject.activeSelf)
-            transform.Find("MagicSkillButton").gameObject.SetActive(true);
+        if (tempGameData.magicGemEquippedItems[1] != -1)
+            magicBtn.SetActive(true);
     }
 }

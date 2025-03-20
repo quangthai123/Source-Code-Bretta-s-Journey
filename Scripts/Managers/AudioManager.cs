@@ -21,21 +21,28 @@ public class AudioManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         sfxHolder = transform.Find("SFX");
         bgmHolder = transform.Find("BGM");
+        LoadAudio();
     }
     private void Reset()
     {
         sfxHolder = transform.Find("SFX");
         bgmHolder = transform.Find("BGM");
-        if (Sfx.Count > 0 || BGM.Count > 0)
-            return;
+        LoadAudio();
+    }
+    private void LoadAudio()
+    {
+        Debug.Log("Load Audio!");
+        Sfx.Clear();
+        BGM.Clear();
         foreach(Transform source in sfxHolder)
         {
             Sfx.Add(source.GetComponent<AudioSource>());
         }
-        foreach (AudioSource source in bgmHolder)
+        foreach (Transform source in bgmHolder)
         {
             BGM.Add(source.GetComponent<AudioSource>());
         }
+
     }
     private void Start()
     {
