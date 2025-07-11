@@ -22,6 +22,7 @@ public class PlayerEnterRunState : PlayerOnGroundState
         //if (!player.isKnocked)
         //    rb.velocity = Vector3.zero;
         player.anim.speed = 1f;
+        player.canChangeToDashState = false;
     }
 
 
@@ -59,6 +60,11 @@ public class PlayerEnterRunState : PlayerOnGroundState
                 stateMachine.ChangeState(player.runState);
             else
                 stateMachine.ChangeState(player.idleState);
+        }
+        if (player.canChangeToDashState && Time.time - player.dashTimer > player.dashCooldown)
+        {
+            Debug.Log("Change to dash State");
+            stateMachine.ChangeState(player.dashState);
         }
     }
     public override void FixedUpdate()

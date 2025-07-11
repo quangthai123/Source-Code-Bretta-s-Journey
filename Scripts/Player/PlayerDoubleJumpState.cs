@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class PlayerDoubleJumpState : PlayerStates
 {
+    //private float jumpHigherDuration = .08f;
+    //private float jumpHigherTimer = .08f;
+    //private bool endJump = false;
     public PlayerDoubleJumpState(Player _player, PlayerStateMachine _stateMachine, string _animBoolName) : base(_player, _stateMachine, _animBoolName)
     {
     }
@@ -14,6 +17,8 @@ public class PlayerDoubleJumpState : PlayerStates
         player.canGrabLedge = true;
         stateDuration = player.jumpDuration;
         rb.velocity = new Vector2(rb.velocity.x, player.jumpForce);
+        //endJump = false;
+        //jumpHigherTimer = jumpHigherDuration;
         AudioManager.instance.PlaySFX(1);
         if (!player.canLadder)
             PlayerEffectSpawner.instance.Spawn("doubleJumpFx", player.centerEffectPos.position, Quaternion.identity);
@@ -30,25 +35,37 @@ public class PlayerDoubleJumpState : PlayerStates
             //if (stateDuration > 0)
             //    rb.velocity = new Vector2(horizontalInput * player.moveSpeed, player.jumpForce);
             //else
-                rb.velocity = new Vector2(horizontalInput * player.moveSpeed * .8f, rb.velocity.y);
+                rb.velocity = new Vector2(horizontalInput * player.moveSpeed, rb.velocity.y);
         }
         else
         {
             //if (stateDuration > 0)
             //    rb.velocity = new Vector2(InputManager.Instance.moveDir.x * player.moveSpeed, player.jumpForce);
             //else
-                rb.velocity = new Vector2(InputManager.Instance.moveDir.x * player.moveSpeed * .8f, rb.velocity.y);
+                rb.velocity = new Vector2(InputManager.Instance.moveDir.x * player.moveSpeed, rb.velocity.y);
         }
-        rb.gravityScale = 6f;
         if (stateDuration < 0 && rb.velocity.y < -.1f && !InputManager.Instance.dashed && !Input.GetKeyDown(KeyCode.LeftShift))
         {
             stateMachine.ChangeState(player.fallState);
         }
+        if (player.CheckGrounded() && !player.CheckSlope() && rb.velocity.y < .1f)
+            stateMachine.ChangeState(player.lightGroundedState);
     }
 
     public override void FixedUpdate()
     {
-        base.FixedUpdate();
+        //base.FixedUpdate();
+        //if (jumpHigherTimer < 0 || endJump)
+        //    return;
+        //rb.gravityScale = 6f;
+        //jumpHigherTimer -= Time.fixedDeltaTime;
+        //if (Input.GetKey(KeyCode.Space) || InputManager.Instance.holdingJumpBtn)
+        //    rb.velocity = new Vector2(rb.velocity.x, player.jumpForce);
+        //else
+        //{
+        //    //rb.velocity = new Vector2(rb.velocity.x, 0f);
+        //    endJump = true;
+        //}
     }
 
     protected override void ChangeStateByInput()
@@ -66,8 +83,8 @@ public class PlayerDoubleJumpState : PlayerStates
                 return;
             if (SkillManager.instance.CanUseSkillSlot1())
                 stateMachine.ChangeState(player.magicSkill1State);
-            else
-                PlayScreenUI.instance.IndicateWhenOutOfManaToUseSkill();
+            else if(player.playerStats.currentMana < SkillManager.instance.GetManaToUse(0))
+                PlayScreenUI.instance.IndicateWhenOutOfManaToUseSkill(SkillManager.instance.GetManaToUse(0));
         }
     }
 }

@@ -11,6 +11,7 @@ public class InputManager : MonoBehaviour
     public static InputManager Instance;
     public Vector2 moveDir;
     public bool jumped;
+    public bool holdingJumpBtn;
     public bool attacked;
     public bool holdingAttackBtn { get; private set; }
     public bool getAttackedBtnUp { get; private set; }
@@ -27,6 +28,7 @@ public class InputManager : MonoBehaviour
         else
             Instance = this;
         jumped = false;
+        holdingJumpBtn = false;
         attacked = false;
         dashed = false;
         parried = false;
@@ -100,6 +102,7 @@ public class InputManager : MonoBehaviour
     public void StartPressJump()
     {
         jumped = true;
+        holdingJumpBtn = true;
         //mobileInputTesting.mobileInputText.text = "Jump";
     }
     public void HoldJumpForMoveUpOnLadder()
@@ -109,6 +112,7 @@ public class InputManager : MonoBehaviour
             jumped = true;
         }
     }
+    public void ReleaseHoldingJumpBtn() { holdingJumpBtn = false; }
     public void SetJumpFalse()
     {
         jumped = false;
@@ -209,6 +213,7 @@ public class InputManager : MonoBehaviour
     public void PressParryButton_Main(Image buttonImage)
     {
         buttonImage.color = new Color(buttonImage.color.r, buttonImage.color.g, buttonImage.color.b, 1);
+        buttonImage.transform.parent.GetComponent<Animator>().SetTrigger("Press");
     }
     public void GetParryButtonUp_Main(Image mainImage)
     {
@@ -227,6 +232,7 @@ public class InputManager : MonoBehaviour
     public void PressDashButton_Main(Image buttonImage)
     {
         buttonImage.color = new Color(buttonImage.color.r, buttonImage.color.g, buttonImage.color.b, 1);
+        buttonImage.transform.parent.GetComponent<Animator>().SetTrigger("Press");
     }
     public void GetDashButtonUp_Main(Image mainImage)
     {
@@ -245,6 +251,7 @@ public class InputManager : MonoBehaviour
     public void PressAttackButton_Main(Image buttonImage)
     {
         buttonImage.color = new Color(buttonImage.color.r, buttonImage.color.g, buttonImage.color.b, 1);
+        buttonImage.transform.parent.GetComponent<Animator>().SetTrigger("Press");
     }
     public void GetAttackButtonUp_Main(Image mainImage)
     {
@@ -263,6 +270,7 @@ public class InputManager : MonoBehaviour
     public void PressJumpButton_Main(Image buttonImage)
     {
         buttonImage.color = new Color(buttonImage.color.r, buttonImage.color.g, buttonImage.color.b, 1);
+        buttonImage.transform.parent.GetComponent<Animator>().SetTrigger("Press");
     }
     public void GetJumpButtonUp_Main(Image mainImage)
     {
@@ -281,6 +289,7 @@ public class InputManager : MonoBehaviour
     public void PressHealButton_Main(Image buttonImage)
     {
         buttonImage.color = new Color(buttonImage.color.r, buttonImage.color.g, buttonImage.color.b, 1);
+        buttonImage.transform.parent.GetComponent<Animator>().SetTrigger("Press");
     }
     public void GetHealButtonUp_Main(Image mainImage)
     {
@@ -299,6 +308,7 @@ public class InputManager : MonoBehaviour
     public void PressSkillButton_Main(Image buttonImage)
     {
         buttonImage.color = new Color(buttonImage.color.r, buttonImage.color.g, buttonImage.color.b, 1);
+        buttonImage.transform.parent.GetComponent<Animator>().SetTrigger("Press");
     }
     public void GetSkillButtonUp_Main(Image mainImage)
     {

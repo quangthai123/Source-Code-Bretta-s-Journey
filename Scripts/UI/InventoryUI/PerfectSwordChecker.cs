@@ -371,6 +371,7 @@ public class PerfectSwordChecker : MonoBehaviour
         swordPieceUI.OnClickPerfectSwordHadTab();
         swordPieceUI.OpenInforUI();
         swordPieceUI.ActivateEquipButton();
+        swordPieceUI.ChangeNumOfEquippedItem(false);
         perfectSwordSelectImage.position = slotToContain.position + new Vector3(0f, 8.67f, 0f);
         perfectSwordSelectImage.gameObject.SetActive(true);
         Player.Instance.playerStatsWithItems.UnEquipPerfectSword(Inventory.Instance.GetItemIndexBySprite(ItemType.PerfectSword, perfectSwordSprite));
@@ -406,6 +407,7 @@ public class PerfectSwordChecker : MonoBehaviour
         swordPieceUI.currentSelectPerfectSwordEquipped = swordPieceUI.selectBigSlot.parent.Find("Sword Perfect");
         swordPieceUI.currentSelectPerfectSwordEquipped.GetComponent<Image>().sprite = perfectSwordImage.sprite;
         swordPieceUI.currentSelectPerfectSwordEquipped.gameObject.SetActive(true);
+        swordPieceUI.ChangeNumOfEquippedItem(true);
         int swordID = Inventory.Instance.GetItemIndexBySprite(ItemType.PerfectSword, perfectSwordImage.sprite);
         SaveManager.instance.tempGameData.perfectSwordsHad.Remove(swordID);
         for (int i=0; i < swordPieceUI.bigSlot.Count; i++)

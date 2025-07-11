@@ -59,6 +59,7 @@ public class Player : Entity
     public float dashDuration; // original 0.3f // update 0.45f
     public float dashCooldown; // original 0.8f // update 0.4f
     public bool endDashAttack = false;
+    [HideInInspector] public bool canChangeToDashState = false;
     [Header("Shield Infor")]
     public float shieldDuration; // original 0.2f // update 0.5f
     public bool isShielding = false;
@@ -88,7 +89,8 @@ public class Player : Entity
     [SerializeField] private float chargedAttackPosX;
     [SerializeField] private float chargedAttackRadius;
     public float allowComboTime;
-    [SerializeField] private float spawnDashShadowCooldown;
+    public float spawnDashShadowCooldown = .08f;
+    public float spawnAirDashShadowCooldown = .05f;
     [SerializeField] private bool startDashShadowCoroutine = false;
     //public Transform attack1FxPos; // New Game: 2f // plus 0.15f with x Axis after per level up
     //public Transform attack2FxPos; // 2.3f
@@ -256,10 +258,10 @@ public class Player : Entity
         if (stateMachine.currentState != reviveState)
             isDead = playerStats.currentHealth == 0;
     }
-    public void StartSpawnDashShadowFx()
+    public void StartSpawnDashShadowFx(float cd)
     {
         startDashShadowCoroutine = true;
-        dashShadowCoroutine = StartCoroutine(SpawnDashShadow());
+        dashShadowCoroutine = StartCoroutine(SpawnDashShadow(cd));
     }
     public void StopSpawnDashShadowFx()
     {
@@ -303,12 +305,12 @@ public class Player : Entity
         }
 
     }
-    private IEnumerator SpawnDashShadow()
+    private IEnumerator SpawnDashShadow(float cd)
     {
         while (startDashShadowCoroutine)
         {
             PlayerEffectSpawner.instance.Spawn("dashShadowFx", transform.position, Quaternion.identity);
-            yield return new WaitForSeconds(spawnDashShadowCooldown);
+            yield return new WaitForSeconds(cd);
         }
     }
     //public bool CheckLedge() => Physics2D.OverlapCircle(ledgeCheckPos.position, ledgeCheckRadius, whatIsGround) && !CheckLedgeGround();
@@ -347,6 +349,10 @@ public class Player : Entity
     {
         return Physics2D.Raycast(groundCheckPos1.position, Vector2.down, groundCheckDistance, whatIsGround)
             || Physics2D.Raycast(groundCheckPos2.position, Vector2.down, groundCheckDistance, whatIsGround) || CheckSlope();
+    }
+    public bool CheckAirDashGrounded()
+    {
+        return Physics2D.Raycast(transform.position, Vector2.down, 3f, whatIsGround);
     }
     public bool CheckJumpOnSlope() => Physics2D.Raycast(groundCheckPos1.position, Vector2.down, groundCheckDistance, whatIsSlopeGround)
             || Physics2D.Raycast(groundCheckPos2.position, Vector2.down, groundCheckDistance, whatIsSlopeGround);

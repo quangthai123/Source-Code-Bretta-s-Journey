@@ -11,7 +11,8 @@ public class Inventory : MonoBehaviour
     public List<Item> allImportantItemsList;
     public List<Item> allSwordPieceItemsList;
     public List<Item> allMagicGemItemsList;
-    public List<PerfectSwordSO> allPerfectSwordList; 
+    public List<PerfectSwordSO> allPerfectSwordList;
+    public List<Sprite> allMainSwordSprites;
 
     public List<int> amorialHadItems;
     public List<int> amorialEquippedItems;

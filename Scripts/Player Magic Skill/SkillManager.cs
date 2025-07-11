@@ -52,9 +52,23 @@ public class SkillManager : MonoBehaviour
     }
     public void SetUsingSkill(int skill, int index)
     {
-        if(skill == 0)
+        if (skill == 0)
             equippedSkillSlot1Index = index;
         else
             equippedSkillSlot2Index = index;
+    }
+    public int GetManaToUse(int skillIndex)
+    {
+        int result = 0;
+        switch(skillIndex)
+        {
+            case 1:
+                result = skillList[equippedSkillSlot2Index].manaToUse;
+                break;
+            default:
+                result = skillList[equippedSkillSlot1Index].manaToUse;
+                break;
+        }
+        return result;
     }
 }

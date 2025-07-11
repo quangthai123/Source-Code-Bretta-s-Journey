@@ -12,32 +12,49 @@ public class SwordSkillUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI swordSkillDescriptionText;
     [SerializeField] private TextMeshProUGUI swordSkillTutorialText;
     [SerializeField] private TextMeshProUGUI swordSkillUpgradeCostText;
+    [SerializeField] private Image demonBloodImage;
     [SerializeField] private Transform learnBtn;
     [SerializeField] private Transform learnFailedNoti;
     [Header("Skill Tree")]
+    [SerializeField] private SwordSkillSO[] swordSkillData;
     [SerializeField] private Sprite upgradedSkillImage;
     [SerializeField] private List<Transform> skillSlots;
     [SerializeField] private List<Transform> links;
     [SerializeField] private Transform selector;
-    private SwordSkillSO[] swordSkillData;
+    [SerializeField] private SwordSkillPreview swordSkillPreview;
     private GameDatas tempGameDatas;
     private int currentSelectedSkillIndex;
     private void Awake()
     {
+        selector.gameObject.SetActive(false);
+    }
+    private void OnEnable()
+    {
         tempGameDatas = Resources.Load<GameDatas>("TempGameData");
-        swordSkillData = Resources.LoadAll<SwordSkillSO>("SwordSkills");
         LoadSwordLv();
+        LoadCanLearnSkill();
         LoadLearnedSkill();
     }
-    private void Update()
-    {
-        if (int.Parse(swordLvText.text) != tempGameDatas.currentSwordLv)
-            LoadSwordLv();
-    }
+    //private void Update()
+    //{
+    //    if (int.Parse(swordLvText.text) != tempGameDatas.currentSwordLv)
+    //        LoadSwordLv();
+    //}
     private void LoadSwordLv()
     {
         swordLvText.text = tempGameDatas.currentSwordLv + "";
         swordImage.sprite = swordSprites[tempGameDatas.currentSwordLv];
+    }
+    private void LoadCanLearnSkill()
+    {
+        int swordLv = tempGameDatas.currentSwordLv;
+        for (int i = 0; i < skillSlots.Count; i++)
+        {
+            if (swordSkillData[i].needingSwordLevel <= swordLv) 
+            {
+                skillSlots[i].Find("LockingSkill").gameObject.SetActive(false);
+            }
+        }
     }
     private void LoadLearnedSkill()
     {
@@ -51,13 +68,14 @@ public class SwordSkillUI : MonoBehaviour
     }
     private void ActivateSkillSlot(int i)
     {
-        skillSlots[i].GetChild(0).gameObject.SetActive(false);
-        skillSlots[i].GetComponent<Image>().sprite = upgradedSkillImage;
+        Transform skillSlot = skillSlots[i];
+        skillSlot.Find("BG").gameObject.SetActive(false);
+        skillSlot.GetComponent<Image>().sprite = upgradedSkillImage;
         switch (i)
         {
             case 1:
                 ActivateLink(0);
-                break; 
+                break;
             case 2:
                 ActivateLink(1);
                 break;
@@ -70,8 +88,58 @@ public class SwordSkillUI : MonoBehaviour
             case 6:
                 ActivateLink(4);
                 break;
-            case 8:
+            case 7:
                 ActivateLink(5);
+                break;
+            case 9:
+                ActivateLink(6);
+                break;
+            case 10:
+                ActivateLink(7);
+                break;
+            case 11:
+                ActivateLink(8);
+                break;
+            case 13:
+                ActivateLink(9);
+                break;
+            case 14:
+                ActivateLink(10);
+                break;
+            case 16:
+                ActivateLink(11);
+                break;
+            case 0:
+                if (tempGameDatas.learnedSkill[4])
+                    ActivateLink(12);
+                break;
+            case 4:
+                if (tempGameDatas.learnedSkill[0])
+                    ActivateLink(12);
+                if (tempGameDatas.learnedSkill[8])
+                    ActivateLink(13);
+                break;
+            case 8:
+                if (tempGameDatas.learnedSkill[4])
+                    ActivateLink(13);
+                if (tempGameDatas.learnedSkill[12])
+                    ActivateLink(14);
+                break;
+            case 12:
+                if (tempGameDatas.learnedSkill[8])
+                    ActivateLink(14);
+                if (tempGameDatas.learnedSkill[15])
+                    ActivateLink(15);
+                break;
+            case 15:
+                if (tempGameDatas.learnedSkill[12])
+                    ActivateLink(15);
+                if (tempGameDatas.learnedSkill[17])
+                    ActivateLink(16);
+                break;
+            case 17:
+                if (tempGameDatas.learnedSkill[15])
+                    ActivateLink(16);
                 break;
         }
     }
@@ -83,41 +151,25 @@ public class SwordSkillUI : MonoBehaviour
     public void OnClickSkillTreeSlot(int slotIndex)
     {
         currentSelectedSkillIndex = slotIndex;
-        selector.localPosition = skillSlots[slotIndex].localPosition;
+        selector.SetParent(skillSlots[slotIndex], true);
+        selector.SetAsFirstSibling();
+        selector.localPosition = Vector2.zero;
         selector.gameObject.SetActive(true);
         SwordSkillSO swordData = swordSkillData[slotIndex];
         swordSkillNameText.text = swordData.skillName;
         swordSkillDescriptionText.text = swordData.skillDescription;
         swordSkillTutorialText.text = swordData.skillTutorial;
-        swordSkillUpgradeCostText.text = swordData.upgradeCost + "";
-        if (tempGameDatas.learnedSkill[slotIndex])
-            learnBtn.gameObject.SetActive(false);
-        else
-            learnBtn.gameObject.SetActive(true);
-    }
-    public void OnClickLearnBtn()
-    {
-        if (Player.Instance.playerStats.currency < swordSkillData[currentSelectedSkillIndex].upgradeCost)
+        if(swordData.needingSwordLevel <= tempGameDatas.currentSwordLv)
         {
-            learnFailedNoti.gameObject.SetActive(true);
-            learnFailedNoti.GetChild(1).GetComponent<TextMeshProUGUI>().text = "Không đủ Huyết Quỷ Đông Tụ!";
-            return;
-        }
-        else if(swordSkillData[currentSelectedSkillIndex].previousSkillIndex != -1)
+            swordSkillUpgradeCostText.gameObject.SetActive(true);
+            demonBloodImage.gameObject.SetActive(true);
+            swordSkillUpgradeCostText.text = swordData.upgradeCost + "";
+            //if(!swordSkillPreview.IsPlaying("Testing1"))
+            //    swordSkillPreview.PlaySkillPreview("Testing1");
+        } else
         {
-            if(!tempGameDatas.learnedSkill[swordSkillData[currentSelectedSkillIndex].previousSkillIndex])
-            {
-                learnFailedNoti.gameObject.SetActive(true);
-                learnFailedNoti.GetChild(1).GetComponent<TextMeshProUGUI>().text = "Yêu cầu kỹ năng trước!";
-                return;
-            }
+            demonBloodImage.gameObject.SetActive(false);
+            swordSkillUpgradeCostText.gameObject.SetActive(false);
         }
-        Player.Instance.playerStats.currency -= swordSkillData[currentSelectedSkillIndex].upgradeCost;
-        tempGameDatas.currency = Player.Instance.playerStats.currency;
-        learnBtn.gameObject.SetActive(false);
-        tempGameDatas.learnedSkill[currentSelectedSkillIndex] = true;
-        LoadLearnedSkill();
-        if(currentSelectedSkillIndex == 9)
-            GetComponent<MagicSkillUI>().LockGemSlot2Image.SetActive(false);
     }
 }

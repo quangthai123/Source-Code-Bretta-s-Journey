@@ -69,5 +69,19 @@ public class PlayerFallState : PlayerAirState
     protected override void ChangeStateByInput()
     {
         base.ChangeStateByInput();
+        if ((Input.GetKeyDown(KeyCode.LeftShift) || InputManager.Instance.dashed))
+        {
+            if (!player.CheckAirDashGrounded() && !player.airDashState.airDashed) 
+            {  
+                Debug.Log("Air dash from fall");
+                stateMachine.ChangeState(player.airDashState);          
+            }
+            else if (player.CheckAirDashGrounded())
+            {
+                Debug.Log("Dash from fall");
+                player.canChangeToDashState = true;
+            }
+
+        }
     }
 }

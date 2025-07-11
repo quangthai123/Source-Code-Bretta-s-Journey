@@ -57,8 +57,8 @@ public class PlayerCrouchState : PlayerStates
                 return;
             if (SkillManager.instance.CanUseSkillSlot2())
                 stateMachine.ChangeState(player.magicState);
-            else
-                PlayScreenUI.instance.IndicateWhenOutOfManaToUseSkill();
+            else if (player.playerStats.currentMana < SkillManager.instance.GetManaToUse(1))
+                PlayScreenUI.instance.IndicateWhenOutOfManaToUseSkill(SkillManager.instance.GetManaToUse(1));
         }
     }
 }

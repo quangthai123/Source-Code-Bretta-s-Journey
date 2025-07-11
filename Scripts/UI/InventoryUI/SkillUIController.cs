@@ -8,6 +8,7 @@ public class SkillUIController : MonoBehaviour
     [SerializeField] private Transform magicSkillUI;
     [SerializeField] private Transform swordSkillUITab;
     [SerializeField] private Transform magicSkillUITab;
+    [SerializeField] private SwordSkillPreview swordSkillPreview;
     public void OnClickSwordSkillUITab()
     {
         if (swordSkillUITab.localScale == new Vector3(1.25f, 1.25f, 1f))
@@ -38,5 +39,7 @@ public class SkillUIController : MonoBehaviour
         swordSkillUITab.localScale = new Vector3(1f, 1f, 1f);
         swordSkillUITab.Find("CoverOnSelect").gameObject.SetActive(false);
         swordSkillUITab.Find("SelectImage").gameObject.SetActive(false);
+
+        //swordSkillPreview.StopPreview();
     }
 }

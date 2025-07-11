@@ -43,8 +43,11 @@ public class PlayerAirState : PlayerStates
         }
         if (Input.GetKeyDown(KeyCode.K) || InputManager.Instance.attacked)
             stateMachine.ChangeState(player.attackState);
-        if ((Input.GetKeyDown(KeyCode.LeftShift) || InputManager.Instance.dashed) && !player.airDashState.airDashed)
-            stateMachine.ChangeState(player.airDashState);
+        //if ((Input.GetKeyDown(KeyCode.LeftShift) || InputManager.Instance.dashed))
+        //{
+        //    if(!player.CheckAirDashGrounded() && !player.airDashState.airDashed)
+        //        stateMachine.ChangeState(player.airDashState);
+        //}
         if(player.CheckWalled() && !player.CheckGrounded() && (Input.GetKeyDown(KeyCode.K) || InputManager.Instance.attacked))
             stateMachine.ChangeState(player.wallSlideState);
         if ((Input.GetKeyDown(KeyCode.Q) || InputManager.Instance.usedSkill) && SaveManager.instance.tempGameData.magicGemEquippedItems != null)
@@ -53,8 +56,8 @@ public class PlayerAirState : PlayerStates
                 return;
             if (SkillManager.instance.CanUseSkillSlot1())
                 stateMachine.ChangeState(player.magicSkill1State);
-            else
-                PlayScreenUI.instance.IndicateWhenOutOfManaToUseSkill();
+            else if(player.playerStats.currentMana < SkillManager.instance.GetManaToUse(0))
+                PlayScreenUI.instance.IndicateWhenOutOfManaToUseSkill(SkillManager.instance.GetManaToUse(0));
         }
     }
 }

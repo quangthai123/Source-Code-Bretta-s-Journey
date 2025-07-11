@@ -15,7 +15,13 @@ public class MobileInputTesting : MonoBehaviour
             Destroy(gameObject);
         else
             Instance = this;
+#if UNITY_EDITOR
         isMobileDevice = false;
+#elif UNITY_ANDROID
+        isMobileDevice = true;
+#elif UNITY_IPHONE
+        isMobileDevice = true;
+#endif
         tempGameData = Resources.Load<GameDatas>("TempGameData");
         magicBtn = transform.Find("MagicSkillButton").gameObject;
         SetStateOfMagicBtn();

@@ -86,6 +86,11 @@ public class PlayerAttackState : PlayerStates
         player.knockFlip = false;
         player.anim.speed = 1f;
         airAttacking = false;
+        if (((horizontalInput < 0 && player.facingDir == 1) || (horizontalInput > 0 && player.facingDir == -1)) ||
+            ((InputManager.Instance.moveDir.x < 0 && player.facingDir == 1) || (InputManager.Instance.moveDir.x > 0 && player.facingDir == -1)))
+        {
+            player.Flip();
+        }
     }
     public override void Update()
     {
@@ -113,12 +118,6 @@ public class PlayerAttackState : PlayerStates
         base.ChangeStateByInput();
         if ((Input.GetKeyDown(KeyCode.LeftShift) || InputManager.Instance.dashed) && Time.time - player.dashTimer > player.dashCooldown)
         {
-            if (((horizontalInput < 0 && player.facingDir == 1) || (horizontalInput > 0 && player.facingDir == -1)) ||
-                ((InputManager.Instance.moveDir.x < 0 && player.facingDir == 1) || (InputManager.Instance.moveDir.x > 0 && player.facingDir == -1)))
-            { 
-                player.Flip();
-                Debug.Log("Cancel attack anim");            
-            }
             if(player.CheckGrounded())
                 stateMachine.ChangeState(player.dashState);
             else

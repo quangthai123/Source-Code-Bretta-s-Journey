@@ -36,7 +36,7 @@ public class PlayerOnGroundState : PlayerStates
     protected override void ChangeStateByInput()
     {
         base.ChangeStateByInput();
-        if(player.CheckGrounded() && (Input.GetKey(KeyCode.Space) || InputManager.Instance.jumped) && !player.canLadder)
+        if(player.CheckGrounded() && (Input.GetKeyDown(KeyCode.Space) || InputManager.Instance.jumped) && !player.canLadder)
             stateMachine.ChangeState(player.jumpState);
         if (Input.GetKeyDown(KeyCode.J) || InputManager.Instance.parried)
             stateMachine.ChangeState(player.shieldState);
@@ -64,8 +64,8 @@ public class PlayerOnGroundState : PlayerStates
                 return;
             if(SkillManager.instance.CanUseSkillSlot1())
                 stateMachine.ChangeState(player.magicSkill1State);
-            else 
-                PlayScreenUI.instance.IndicateWhenOutOfManaToUseSkill();
+            else if (player.playerStats.currentMana < SkillManager.instance.GetManaToUse(0))
+                PlayScreenUI.instance.IndicateWhenOutOfManaToUseSkill(SkillManager.instance.GetManaToUse(0));
         }
     }
 }

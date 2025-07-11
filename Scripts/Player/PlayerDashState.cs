@@ -22,7 +22,7 @@ public class PlayerDashState : PlayerStates
         if (!player.CheckSlope())
             startDashFx = PlayerEffectSpawner.instance.Spawn("endDashFx", player.leftEffectPos.position, Quaternion.identity);
         player.isKnocked = true;
-        player.StartSpawnDashShadowFx();
+        player.StartSpawnDashShadowFx(player.spawnDashShadowCooldown);
     }
     public override void Exit()
     {

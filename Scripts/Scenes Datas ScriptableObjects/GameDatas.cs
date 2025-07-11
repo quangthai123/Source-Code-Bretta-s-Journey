@@ -74,6 +74,8 @@ public class GameDatas : ScriptableObject
     public List<bool> learnedSkill;
 
     public bool finishLv1;
+    public List<bool> upgradedSwordStatues;
+    public int[] upgradedSwordLv; // luu index tuong nao da nang kiem lv nao, index cua tuong tuong ung voi vi tri trong mang
     public void SetNewGame(int _saveSlot)
     {
         saveSlot = _saveSlot;
@@ -146,12 +148,18 @@ public class GameDatas : ScriptableObject
         selectingTab = 0;
 
         learnedSkill = new List<bool>();
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 18; i++)
         {
             learnedSkill.Add(false);
         }
 
         finishLv1 = false;
+        upgradedSwordStatues = new List<bool>();
+        for (int i=0; i<7; i++) 
+        {
+            upgradedSwordStatues.Add(false);
+        }
+        upgradedSwordLv = new int[7] { -1, -1, -1, -1, -1, -1, -1 };
     }
     public void GetDataFrom(GameDatas _gameData)
     {
@@ -217,6 +225,9 @@ public class GameDatas : ScriptableObject
         this.learnedSkill = _gameData.learnedSkill;
 
         this.finishLv1 = _gameData.finishLv1;
+
+        this.upgradedSwordStatues = _gameData.upgradedSwordStatues;
+        this.upgradedSwordLv = _gameData.upgradedSwordLv;
     }
 }
 

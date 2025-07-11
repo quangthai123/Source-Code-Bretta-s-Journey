@@ -30,6 +30,7 @@ public class PlayerShieldState : PlayerStates
         if(stateDuration < 0)
         {
             player.anim.SetTrigger("FinishShield");
+            player.isShielding = false;
         }
         if (finishAnim)
             stateMachine.ChangeState(player.idleState);

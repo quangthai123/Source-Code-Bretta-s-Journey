@@ -125,7 +125,9 @@ public class Enemy : Entity
         enemyStats.GetDamageStat(_damage);
         Quaternion randomRotation = Quaternion.Euler(0f, 0f, UnityEngine.Random.Range(0f, 360f));
         PlayerEffectSpawner.instance.Spawn(PlayerEffectSpawner.instance.attackImpactFx2, spawnFxPos, randomRotation);
-        //followEnemyFxOffset = transform.position - spawnFxPos;
+        Vector2 rdPos = new Vector2(transform.position.x + UnityEngine.Random.Range(-.75f, .75f), transform.position.y);
+        Transform damageText = DamageTextSpawner.Instance.Spawn(DamageTextSpawner.Instance.DamageTextName, rdPos, Quaternion.identity);
+        damageText.GetComponent<DamageTextFx>().SetDamage(_damage);
         if (enemyStats.currentHealth < 1)
             return;
         entityFx.StartCoroutine(entityFx.FlashFX());

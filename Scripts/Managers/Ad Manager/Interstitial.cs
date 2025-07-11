@@ -22,8 +22,8 @@ public class Interstitial : MonoBehaviour
             // This callback is called once the MobileAds SDK is initialized.
         });
         LoadInterstitialAd();
-        if(CheckCanShowInterstitialAd())
-            ShowInterstitialAd();
+        //if(CheckCanShowInterstitialAd())
+        //    ShowInterstitialAd();
     }
     // Check played more than 10m
     private bool CheckCanShowInterstitialAd()

@@ -37,7 +37,8 @@ public class PlayerStates
         //    return;
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
-        stateDuration -= Time.deltaTime;
+        if(stateDuration >= 0)
+            stateDuration -= Time.deltaTime;
         if (player.CheckSlope())
         {
             if(player.stateMachine.currentState != player.runState)

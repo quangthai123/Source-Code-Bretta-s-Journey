@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MergedSwordNoti : NotificationUI
+public class MergedSwordNoti : InventoryNotificationUI
 {
     [SerializeField] private Image perfectSwordImage;
     [SerializeField] private TextMeshProUGUI perfectSwordName;

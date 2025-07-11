@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public enum ItemType
 {
@@ -172,7 +173,28 @@ public class Item : MonoBehaviour
         {
             Player.Instance.pickupedItem = false;
             Inventory.Instance.AddItem(itemType, itemIndex);
-            PickedUpItemNotification.Instance.ShowPickedUpItemNotification(Inventory.Instance.GetSpriteByItemIndex(this.itemType, this.itemIndex), itemName);
+            Sprite sprite = Inventory.Instance.GetSpriteByItemIndex(this.itemType, this.itemIndex);
+            if (itemType != ItemType.SwordPiece)
+                PickedUpItemNotification.Instance.ShowPickedUpItemNotification(sprite, itemName);
+            else
+            {
+                Transform swordPiece = SwordPieceUI.Instance.swordPieceData[0];
+                foreach(var transf in SwordPieceUI.Instance.swordPieceData) 
+                { 
+                    if(transf.GetComponent<Image>().sprite == sprite)
+                    {
+                        swordPiece = transf;
+                        break;
+                    }
+                }
+                PickedUpItemNotification.Instance.ShowPickedUpSwordPieceNotification(
+                    sprite,
+                    swordPiece.GetComponent<RectTransform>().pivot,
+                    swordPiece.rotation,
+                    swordPiece.localScale,
+                    itemName);
+            
+            }
             gameObject.SetActive(false);
         }
     }

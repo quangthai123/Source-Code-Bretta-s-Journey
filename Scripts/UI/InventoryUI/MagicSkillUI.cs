@@ -32,7 +32,7 @@ public class MagicSkillUI : InventoryLogic
     private void LoadEquipGemSlot()
     {
         // Neu da mo slot skill 2 => mac dinh ko chon slot nao khi load scene
-        if (tempGameData.learnedSkill[9])
+        if (tempGameData.learnedSkill[17])
         {
             equipSlotSelector.gameObject.SetActive(false);
             LockGemSlot2Image.SetActive(false);

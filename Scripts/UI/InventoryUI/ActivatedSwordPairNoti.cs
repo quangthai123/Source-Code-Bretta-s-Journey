@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ActivatedSwordPairNoti : NotificationUI
+public class ActivatedSwordPairNoti : InventoryNotificationUI
 {
     [SerializeField] private Transform pairImageHolder;
     [SerializeField] private Image sword1Image;

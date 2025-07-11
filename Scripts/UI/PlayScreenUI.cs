@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class PlayScreenUI : MonoBehaviour
 {
     public static PlayScreenUI instance;
-    [SerializeField] private List<GameObject> swordAvatarUIList;
+    public List<GameObject> swordAvatarUIList;
     private PlayerStats playerStats;
     [SerializeField] private RectTransform healthBar;
     [SerializeField] private RectTransform manaBar;
@@ -26,11 +26,11 @@ public class PlayScreenUI : MonoBehaviour
     private Coroutine startBreakResistManaCoroutine;
     public Coroutine startAddCurrencyUICoroutine;
     private bool haveDiedd;
-    public float currencyValueUI { get; private set; }
+    private float currencyValueUI;
     private float tempCurrencyValueUI;
     public bool finishManaResist = false;
     public bool finishDeductCurrencyUI = false;
-    [SerializeField] private List<Image> manaFillImageList;
+    [SerializeField] private RectTransform notEnoughManaIndicator;
     private int fps;
     [SerializeField] private TextMeshProUGUI fpsText;
     private bool indicatedNotEnoughMana = false;
@@ -83,12 +83,14 @@ public class PlayScreenUI : MonoBehaviour
         InvokeRepeating("GetFrameRate", .5f, .5f);
 
     }
+    public void HideControlUI() => controlUI.SetActive(false);
+    public void ShowControlUI() => controlUI.SetActive(true);
     void Update()
     {
         if (Player.Instance.isDead)
-            controlUI.SetActive(false);
-        else if (SceneScenarioSelectLv.instance == null)
-            controlUI.SetActive(true);
+            HideControlUI();
+        //else if (SceneScenarioSelectLv.instance == null)
+        //    ShowControlUI();
 
         if (playerStats.haveDied && startResistManaCoroutine == null && resistManaBar.localScale.y < 2.4f)
         {
@@ -103,7 +105,7 @@ public class PlayScreenUI : MonoBehaviour
         if (currencyValueUI != playerStats.currency && startAddCurrencyUICoroutine == null)
         {
             Debug.Log("Start Change Currency UI");
-            tempCurrencyValueUI = currencyValueUI;
+            //tempCurrencyValueUI = currencyValueUI;
             startAddCurrencyUICoroutine = StartCoroutine(StartChangeCurrencyValueUI());
         }
         healthBar.localScale = new Vector3(playerStats.maxHealth.GetValue() / playerStats.maxHealth.baseValue, 1f, 1f);
@@ -134,31 +136,27 @@ public class PlayScreenUI : MonoBehaviour
 
     private IEnumerator StartChangeCurrencyValueUI() 
     {
-        currencyText.text = (int)currencyValueUI+"";
-        yield return new WaitForSeconds(.1f);
+        tempCurrencyValueUI = currencyValueUI;
+        while ((currencyValueUI < playerStats.currency && playerStats.currency > tempCurrencyValueUI)
+            || (currencyValueUI > playerStats.currency && playerStats.currency < tempCurrencyValueUI))
+        {
+            currencyValueUI += (float)(playerStats.currency - tempCurrencyValueUI) / 20f;
+            yield return new WaitForSeconds(.1f);
+            currencyText.text = (int)currencyValueUI+"";
+        }
         AddCurrencyUI();
     }
     private void AddCurrencyUI() 
-    { 
-        currencyValueUI += (float)(playerStats.currency - tempCurrencyValueUI) / 10f;
+    {
         Debug.Log(currencyValueUI);
-        if ((currencyValueUI >= playerStats.currency && playerStats.currency > tempCurrencyValueUI)
-            || (currencyValueUI <= playerStats.currency && playerStats.currency < tempCurrencyValueUI)) 
-        {
-            Debug.Log("startAddCurrencyUICoroutine = null");
-            currencyValueUI = playerStats.currency;
-            currencyText.text = currencyValueUI + "";
-            StopCoroutine(startAddCurrencyUICoroutine);
-            startAddCurrencyUICoroutine = null;
-            //startAddCurrencyUICoroutine = false;
-            finishDeductCurrencyUI = true;
-            if(startResistManaCoroutine == null && GameManager.Instance.pressedResetGame)
-                finishManaResist = true;
-        } else {
-            Debug.Log("Continue change currency");
-            StartCoroutine(StartChangeCurrencyValueUI());
-        }
-    }
+        currencyValueUI = playerStats.currency;
+        currencyText.text = currencyValueUI + "";
+        StopCoroutine(startAddCurrencyUICoroutine);
+        startAddCurrencyUICoroutine = null;
+        finishDeductCurrencyUI = true;
+        if (startResistManaCoroutine == null && GameManager.Instance.pressedResetGame)
+            finishManaResist = true;
+    } 
     public void ActiveDeathUI()
     {
         deathUI.SetActive(true);
@@ -216,24 +214,23 @@ public class PlayScreenUI : MonoBehaviour
         else
             StartCoroutine(BreakResistMana());
     }
-    public void IndicateWhenOutOfManaToUseSkill() 
+    public void IndicateWhenOutOfManaToUseSkill(int manaToUse) 
     {
         if (indicatedNotEnoughMana) 
             return;
         indicatedNotEnoughMana = true;
-        foreach(Image i in manaFillImageList) 
-        {
-            i.color = new Color(i.color.r, i.color.g, i.color.b, 55f/255f);
-        }
-        Invoke("BackToNormalColorManaBar", .5f);
+        float scaleX = manaToUse / playerStats.maxMana.GetValue();
+        Vector3 localScale = notEnoughManaIndicator.localScale;
+        localScale.x = scaleX;
+        notEnoughManaIndicator.localScale = localScale;
+        notEnoughManaIndicator.gameObject.SetActive(true);
+        Invoke("BackToNormalColorManaBar", .15f);
     }
     private void BackToNormalColorManaBar() 
     {
-        foreach (Image i in manaFillImageList) 
-        {
-            i.color = new Color(i.color.r, i.color.g, i.color.b, 255f / 255f);
-        }
+        notEnoughManaIndicator.gameObject.SetActive(false);
         indicatedNotEnoughMana = false;
+        notEnoughManaIndicator.localScale = Vector3.one;
     }
     private void OnResetGame(object[] datas)
     {
@@ -243,7 +240,7 @@ public class PlayScreenUI : MonoBehaviour
         if (resistManaBar.localScale.y == 2.4f && currencyValueUI == Player.Instance.playerStats.currency) 
         {
             LoadingScene.instance.StartFadeIn();
-            Player.Instance.playerStats.Resting();
+            playerStats.Resting();
             Player.Instance.isKnocked = true;
             Invoke("LoadScene", .5f);
         }

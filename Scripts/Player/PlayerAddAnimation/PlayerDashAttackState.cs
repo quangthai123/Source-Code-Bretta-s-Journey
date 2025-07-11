@@ -18,7 +18,7 @@ public class PlayerDashAttackState : PlayerStates
         player.normalCol.SetActive(false);
         player.dashCol.SetActive(true);
         player.isKnocked = true;
-        player.StartSpawnDashShadowFx();
+        player.StartSpawnDashShadowFx(player.spawnDashShadowCooldown);
     }
     public override void Exit()
     {

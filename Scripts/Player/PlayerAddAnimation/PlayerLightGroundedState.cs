@@ -11,6 +11,7 @@ public class PlayerLightGroundedState : PlayerOnGroundState
     public override void Exit()
     {
         base.Exit();
+        player.canChangeToDashState = false;
     }
 
     public override void Start()
@@ -23,6 +24,11 @@ public class PlayerLightGroundedState : PlayerOnGroundState
         base.Update();
         if (finishAnim)
             stateMachine.ChangeState(player.idleState);
+        if(player.canChangeToDashState && Time.time - player.dashTimer > player.dashCooldown)
+        {
+            Debug.Log("Change to dash State");
+            stateMachine.ChangeState(player.dashState);
+        }
 
     }
     protected override void ChangeStateByInput()

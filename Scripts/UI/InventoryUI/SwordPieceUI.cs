@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class SwordPieceUI : InventoryLogic
 {
     public static SwordPieceUI Instance;
-    [SerializeField] private List<Transform> swordPieceData;
+    public List<Transform> swordPieceData;
     public List<Transform> bigSlot;
     [SerializeField] int currentSwordPieceSlot;
     [SerializeField] private TextMeshProUGUI selectedItemFunction;
@@ -638,5 +638,12 @@ public class SwordPieceUI : InventoryLogic
                     slot.Find("Slot" + i).GetChild(0).GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);
             }
         }
+    }
+    public void ChangeNumOfEquippedItem(bool isEquipPerfectSword)
+    {
+        if (isEquipPerfectSword)
+            numOfEquippedItem += 4;
+        else
+            numOfEquippedItem -= 4;
     }
 }

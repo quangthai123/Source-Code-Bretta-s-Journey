@@ -23,7 +23,21 @@ public class PickedUpItemNotification : MonoBehaviour
     {
         itemImage.sprite = _itemImage;
         itemName.text = _itemName;
+        itemImage.useSpriteMesh = false;
+        itemImage.rectTransform.pivot = new Vector2(.5f, .5f);
+        itemImage.rectTransform.localScale = Vector2.one;
+        itemImage.rectTransform.rotation = Quaternion.identity;
         //StopAllCoroutines();
+        StartCoroutine(ActiveUIByTime());
+    }
+    public void ShowPickedUpSwordPieceNotification(Sprite _itemImage, Vector2 pivot, Quaternion rotation, Vector2 scale, string _itemName)
+    {
+        itemImage.sprite = _itemImage;
+        itemImage.useSpriteMesh = true;
+        itemImage.rectTransform.pivot = pivot;
+        itemImage.rectTransform.rotation = rotation;
+        itemImage.rectTransform.localScale = scale * 1.65f;
+        itemName.text = _itemName;
         StartCoroutine(ActiveUIByTime());
     }
     private IEnumerator ActiveUIByTime()

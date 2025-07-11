@@ -10,4 +10,5 @@ public class SwordSkillSO : ScriptableObject
     public string skillTutorial;
     public int upgradeCost;
     public int previousSkillIndex;
+    public int needingSwordLevel;
 }
