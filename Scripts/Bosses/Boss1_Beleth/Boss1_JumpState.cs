@@ -21,16 +21,16 @@ public class Boss1_JumpState : EnemyStates
         if(player.transform.position.x < enemyBase.transform.position.x)
         {
             if(Vector2.Distance(player.transform.position, enemy.transform.position) > 7.5f)
-                rb.velocity = new Vector2(-(-player.transform.position.x + enemyBase.transform.position.x + 7.5f), enemy.jumpForce);
+                rb.linearVelocity = new Vector2(-(-player.transform.position.x + enemyBase.transform.position.x + 7.5f), enemy.jumpForce);
             else
-                rb.velocity = new Vector2(-(-player.transform.position.x + enemyBase.transform.position.x), enemy.jumpForce);
+                rb.linearVelocity = new Vector2(-(-player.transform.position.x + enemyBase.transform.position.x), enemy.jumpForce);
         }
         else
         {
             if (Vector2.Distance(player.transform.position, enemy.transform.position) > 7.5f)
-                rb.velocity = new Vector2(player.transform.position.x - enemyBase.transform.position.x + 7.5f, enemy.jumpForce);
+                rb.linearVelocity = new Vector2(player.transform.position.x - enemyBase.transform.position.x + 7.5f, enemy.jumpForce);
             else
-                rb.velocity = new Vector2(player.transform.position.x - enemyBase.transform.position.x, enemy.jumpForce);
+                rb.linearVelocity = new Vector2(player.transform.position.x - enemyBase.transform.position.x, enemy.jumpForce);
         }
     }
     public override void Exit()
@@ -41,7 +41,7 @@ public class Boss1_JumpState : EnemyStates
     {
         base.Update();
         FlipToFacePlayer();
-        if (rb.velocity.y < -.1f)
+        if (rb.linearVelocity.y < -.1f)
         {
             stateMachine.ChangeState(enemy.fallState);
         }

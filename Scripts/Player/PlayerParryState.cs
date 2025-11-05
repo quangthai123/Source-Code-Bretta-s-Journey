@@ -32,7 +32,7 @@ public class PlayerParryState : PlayerStates
     {
         base.Exit();
         player.isKnocked = false;
-        rb.velocity = Vector3.zero;
+        rb.linearVelocity = Vector3.zero;
     }
     public override void Update()
     {
@@ -45,7 +45,7 @@ public class PlayerParryState : PlayerStates
         else
             spawnParryEffectTimer -= Time.deltaTime;
         if(!player.CheckGroundedWhileHurtOrParry())
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
         if (stateDuration < 0f)
             stateMachine.ChangeState(player.exitParryState);
     }

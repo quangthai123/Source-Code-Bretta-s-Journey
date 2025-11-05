@@ -21,7 +21,7 @@ public class Enemy0_WalkState : EnemyStates
     public override void Exit()
     {
         base.Exit();
-        rb.velocity = Vector3.zero;
+        rb.linearVelocity = Vector3.zero;
     }
     public override void Update()
     {
@@ -34,7 +34,7 @@ public class Enemy0_WalkState : EnemyStates
 
         if (CanConstraintMoveOnDetectWallOrEndGround() && enemy.DetectedPlayer())
         {
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
             if(!enemy.canDamageByAnim && !CheckPlayerPosThrougWallOrOtherGround())
                 enemy.Flip();
         }

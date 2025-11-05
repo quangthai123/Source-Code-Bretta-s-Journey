@@ -15,7 +15,7 @@ public class ParallaxBG : MonoBehaviour
         xPosition = transform.position.x;
         cameraTransf = Camera.main.transform;
     }
-    void Update()
+    void LateUpdate()
     {
         float distanceOffsetWithCam = cameraTransf.position.x * (1 - parallaxEffect);
         float distanceToMove = cameraTransf.position.x * parallaxEffect;

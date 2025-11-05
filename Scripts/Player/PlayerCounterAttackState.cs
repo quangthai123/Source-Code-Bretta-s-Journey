@@ -29,7 +29,7 @@ public class PlayerCounterAttackState : PlayerStates
     public override void Update()
     {
         base.Update();
-        rb.velocity = Vector3.zero;
+        rb.linearVelocity = Vector3.zero;
         if (finishAnim)
             stateMachine.ChangeState(player.idleState);
     }

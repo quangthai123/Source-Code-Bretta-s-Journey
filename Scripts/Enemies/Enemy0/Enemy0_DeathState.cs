@@ -21,7 +21,7 @@ public class Enemy0_DeathState : EnemyStates
     public override void Update()
     {
         base.Update();
-        rb.velocity = Vector2.zero;
+        rb.linearVelocity = Vector2.zero;
         if (finishAnim)
             enemy.SetActiveFalse();
     }

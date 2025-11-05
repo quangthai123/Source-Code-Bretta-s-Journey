@@ -11,7 +11,7 @@ public class PlayerPickupState : PlayerStates
     public override void Start()
     {
         base.Start();
-        rb.velocity = Vector3.zero;
+        rb.linearVelocity = Vector3.zero;
         if ((player.transform.position.x < player.currentItemPosX && player.facingDir == -1) ||
             (player.transform.position.x > player.currentItemPosX && player.facingDir == 1))
         {
@@ -35,7 +35,7 @@ public class PlayerPickupState : PlayerStates
     public override void Update()
     {
         base.Update();
-        rb.velocity = Vector3.zero;
+        rb.linearVelocity = Vector3.zero;
         if (finishAnim)
             stateMachine.ChangeState(player.exitCrouchState);
     }

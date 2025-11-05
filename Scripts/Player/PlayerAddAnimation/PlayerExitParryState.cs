@@ -23,7 +23,7 @@ public class PlayerExitParryState : PlayerOnGroundState
     public override void Update()
     {
         base.Update();
-        rb.velocity = new Vector2(0f, rb.velocity.y);
+        rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
         if (finishAnim)
             stateMachine.ChangeState(player.idleState);
     }

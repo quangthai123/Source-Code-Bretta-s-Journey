@@ -7,6 +7,7 @@ public class OneWayPlatform : MonoBehaviour
     private BoxCollider2D boxCol;
     private Transform player;
     [SerializeField] private bool canJumpDown = false;
+    private bool jumpedDown = false;
     void Start()
     {
         boxCol = GetComponent<BoxCollider2D>();
@@ -14,16 +15,27 @@ public class OneWayPlatform : MonoBehaviour
     }
     private void Update()
     {
-        if (player.position.y >= transform.position.y + 1.4f && !canJumpDown && Player.Instance.stateMachine.currentState != Player.Instance.ladderState)
+        if (player.position.y >= transform.position.y + 1.4f && !jumpedDown && Player.Instance.stateMachine.currentState != Player.Instance.ladderState)
         {
             boxCol.enabled = true;
         } else if(player.position.y < transform.position.y + 1.4f)
         {
             boxCol.enabled = false;
             canJumpDown = false;
+            jumpedDown = false;
         }
         if(Player.Instance.canLadder && (Input.GetAxisRaw("Vertical") != 0f || InputManager.Instance.moveDir.y != 0))
             boxCol.enabled = false;
+        if(canJumpDown && (Player.Instance.stateMachine.currentState == Player.Instance.crouchState ||
+            Player.Instance.stateMachine.currentState == Player.Instance.enterCrouchState))
+        {
+            if(InputManager.Instance.jumped || Input.GetKeyDown(KeyCode.Space))
+            {
+                boxCol.enabled = false;
+                jumpedDown = true;
+                Debug.Log("Jump down!");
+            }
+        }
     }
     //private void OnCollisionEnter2D(Collision2D collision)
     //{
@@ -33,13 +45,26 @@ public class OneWayPlatform : MonoBehaviour
     //        Player.Instance.stateMachine.ChangeState(Player.Instance.idleState);
     //    }     
     //}
-    private void OnCollisionStay2D(Collision2D collision)
+    private void OnCollisionEnter2D(Collision2D collision) 
     {
-        if (collision.gameObject.tag == "Player" && (Input.GetKey(KeyCode.S) || InputManager.Instance.moveDir.y==-1))
+        if (collision.gameObject.tag == "Player")
         {
-            Debug.Log("Jump down!");
             canJumpDown = true;
-            boxCol.enabled = false;
+            //jumpedDown = false;
         }
     }
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Player")
+        {
+            canJumpDown = false;
+        }
+    }
+    //private void OnCollisionStay2D(Collision2D collision)
+    //{
+    //    if (collision.gameObject.tag == "Player" && (Input.GetKey(KeyCode.S) || InputManager.Instance.moveDir.y==-1))
+    //    {
+    //        canJumpDown = true;
+    //    }
+    //}
 }

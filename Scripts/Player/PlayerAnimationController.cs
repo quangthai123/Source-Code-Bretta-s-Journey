@@ -51,6 +51,15 @@ public class PlayerAnimationController : MonoBehaviour
         if (!player.CheckSlope())
             PlayerEffectSpawner.instance.Spawn("runFx", Player.Instance.leftEffectPos.position, Quaternion.identity);
     }
+    private void SpawnTurnRunEffect()
+    {
+        AudioManager.instance.PlaySFX(0);
+        if (!player.CheckSlope())
+        {
+            Transform fx = PlayerEffectSpawner.instance.Spawn("runFx", new Vector2(player.leftEffectPos.position.x - .15f * player.facingDir, player.leftEffectPos.position.y), Quaternion.identity);
+            //fx.GetComponent<PlayerEffectDespawnByAnim>().Flip();
+        }
+    }
     private void StartHealEffect()
     {
         Transform healFx = PlayerEffectSpawner.instance.Spawn(PlayerEffectSpawner.instance.healEffect, Player.Instance.centerEffectPos.position, Quaternion.identity);
@@ -126,5 +135,17 @@ public class PlayerAnimationController : MonoBehaviour
     {
         if(!player.CheckGrounded() && !player.CheckJumpOnSlope())
             player.stateMachine.ChangeState(player.fallState);
+    }
+    private void MoveToLadder1()
+    {
+        player.transform.position = new Vector2(player.LadderPosX - .82f * player.facingDir, player.transform.position.y);
+    }
+    private void MoveToLadder2()
+    {
+        player.transform.position = new Vector2(player.LadderPosX - .5f * player.facingDir, player.transform.position.y);
+    }
+    private void MoveToLadder3()
+    {
+        player.transform.position = new Vector2(player.LadderPosX, player.transform.position.y);
     }
 }

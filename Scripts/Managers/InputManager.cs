@@ -27,6 +27,7 @@ public class InputManager : MonoBehaviour
             Destroy(gameObject);
         else
             Instance = this;
+        DontDestroyOnLoad(gameObject);
         jumped = false;
         holdingJumpBtn = false;
         attacked = false;

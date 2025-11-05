@@ -8,7 +8,6 @@ public class LearnSwordSkillUI : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI swordLvText;
     [SerializeField] private Image swordImage;
-    [SerializeField] private List<Sprite> swordSprites;
     [SerializeField] private TextMeshProUGUI swordSkillNameText;
     [SerializeField] private TextMeshProUGUI swordSkillDescriptionText;
     [SerializeField] private TextMeshProUGUI swordSkillTutorialText;
@@ -26,6 +25,9 @@ public class LearnSwordSkillUI : MonoBehaviour
     [SerializeField] private SwordSkillPreview swordSkillPreview;
     [SerializeField] private TextMeshProUGUI currencyTxt;
     [SerializeField] private TextMeshProUGUI learnPriceTxt;
+    [SerializeField] private TextMeshProUGUI swordLoreTxt;
+    [SerializeField] private GameObject loreBtn;
+    [SerializeField] private GameObject loreUI;
     private GameDatas tempGameData;
     private PlayerStats playerStats;
     private int currentSelectedSkillIndex;
@@ -34,17 +36,21 @@ public class LearnSwordSkillUI : MonoBehaviour
     private Coroutine learningCorou;
     private float currencyValueUI;
     private float tempCurrencyValueUI;
+    private int updatedSwordLv;
+    private MainSwordSO[] mainSwordData;
     private void Awake()
     {
+        tempGameData = Resources.Load<GameDatas>("TempGameData");
+        mainSwordData = Resources.LoadAll<MainSwordSO>("MainSwords");
         learnBtn.gameObject.SetActive(false);
         swordSkillInfor.SetActive(false);
     }
     private void OnEnable()
     {
-        tempGameData = Resources.Load<GameDatas>("TempGameData");
         currencyValueUI = tempGameData.currency;
         currencyTxt.text = tempGameData.currency.ToString();
         playerStats = Player.Instance.playerStats;
+        loreUI.SetActive(false);
         LoadCanLearnSkill();
         LoadLearnedSkill();
         LoadSword();
@@ -73,9 +79,9 @@ public class LearnSwordSkillUI : MonoBehaviour
     private void LoadSword()
     {
         int statueId = transform.parent.GetChild(0).GetComponent<EnhanceSwordUI>().swordStatueId;
-        int swordLv = tempGameData.upgradedSwordLv[statueId];
-        swordImage.sprite = swordSprites[swordLv];
-        swordLvText.text = swordLv.ToString();
+        updatedSwordLv = tempGameData.upgradedSwordLv[statueId];
+        swordImage.sprite = Inventory.Instance.allMainSwordSprites[updatedSwordLv];
+        swordLvText.text = updatedSwordLv.ToString();
     }
     private void ActivateSkillSlot(int i)
     {
@@ -169,6 +175,7 @@ public class LearnSwordSkillUI : MonoBehaviour
         selector.localPosition = Vector2.zero;
         selector.localScale = Vector2.one;
         selector.gameObject.SetActive(true);
+        loreBtn.SetActive(false);
         swordHolder.GetChild(0).gameObject.SetActive(false);
         SwordSkillSO swordData = swordSkillData[slotIndex];
         swordSkillNameText.text = swordData.skillName;
@@ -297,8 +304,16 @@ public class LearnSwordSkillUI : MonoBehaviour
         swordHolder.GetChild(0).gameObject.SetActive(true);
         learnBtn.gameObject.SetActive(false);
 
+        MainSwordSO swordData = mainSwordData[updatedSwordLv];
+        swordSkillNameText.text = swordData.SwordName;
+        swordSkillDescriptionText.text = swordData.Description;
+        swordLoreTxt.text = swordData.Lore;
+        swordSkillTutorialText.text = "";
+        loreBtn.SetActive(true);
         swordSkillInfor.SetActive(true);
         //swordSelector.localPosition = new Vector2(swordSelector.localPosition.x, swordHolder.GetChild(index).localPosition.y);
         //swordSelector.gameObject.SetActive(true);
     }
+    public void OnClickOpenSwordLore() => loreUI.SetActive(true);
+    public void OnClickCloseSwordLore() => loreUI.SetActive(false);
 }

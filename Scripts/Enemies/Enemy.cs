@@ -26,10 +26,10 @@ public class Enemy : Entity
     public float actionMinTime;
     public float actionMaxTime;
     public float attackCooldown;
-    [SerializeField] private float knockbackForceX;  
+    [SerializeField] private float knockbackForceX;
     protected Player player;
     [HideInInspector] public EnemyStats enemyStats;
-    protected bool isOver = false;
+    public bool isOver { get; private set; } = false;
     [Header("Col Infor")]
     [SerializeField] protected BoxCollider2D colNoTrigger;
     [SerializeField] protected BoxCollider2D colTrigger;
@@ -88,6 +88,7 @@ public class Enemy : Entity
             colNoTrigger.gameObject.layer = LayerMask.NameToLayer("Default");
             colTrigger.enabled = false;
             player.playerStats.AddCurrency(enemyStats.currency);
+            EnemiesManager.Instance.SaveDeadEnemy(transform);
         }
     }
 

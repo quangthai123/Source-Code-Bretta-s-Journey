@@ -31,7 +31,7 @@ public class PlayerAirDashState : PlayerStates
         airDashed = true;
         startDash = false;
         player.isKnocked = false;
-        rb.velocity = new Vector2(0f, rb.velocity.y);
+        rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
         player.StopSpawnDashShadowFx();
         //player.anim.ResetTrigger("StopAirDash");
         //Time.timeScale = 1f;
@@ -41,7 +41,7 @@ public class PlayerAirDashState : PlayerStates
         base.Update();
         if(hoverBeforeTimer > 0)
         {
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
             hoverBeforeTimer -= Time.deltaTime;
         }
         else if(!startDash)
@@ -79,7 +79,7 @@ public class PlayerAirDashState : PlayerStates
     {
         base.FixedUpdate();
         if(stateDuration > 0)
-            rb.velocity = new Vector2(player.dashSpeed * 1.75f * player.facingDir, 0f);
+            rb.linearVelocity = new Vector2(player.dashSpeed * 1.75f * player.facingDir, 0f);
     }
 
     protected override void ChangeStateByInput()

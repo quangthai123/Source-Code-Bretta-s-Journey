@@ -25,7 +25,7 @@ public class Boss1_IdleState : EnemyStates
     {
         base.Update();
         FlipToFacePlayer();
-        rb.velocity = new Vector2(0f, rb.velocity.y);
+        rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
         if (!enemy.startBoss1Phase)
             return;
         if (!enemy.firstAttacked)

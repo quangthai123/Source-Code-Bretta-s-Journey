@@ -43,7 +43,7 @@ public class SceneScenarioSelectLv : SceneScenario
     {
         if(!isScenario)
         {
-            Player.Instance.rb.velocity = new Vector2(0f, -60f);
+            Player.Instance.rb.linearVelocity = new Vector2(0f, -60f);
         }
     }
     private void OnTriggerEnter2D(Collider2D collision)

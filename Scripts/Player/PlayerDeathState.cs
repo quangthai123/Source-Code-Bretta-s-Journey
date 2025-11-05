@@ -27,7 +27,7 @@ public class PlayerDeathState : PlayerStates
     {
         base.Update();
         if (player.CheckGrounded())
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
         if (finishAnim && !setActiveDeathUI) 
         {
             PlayerEffectSpawner.instance.Spawn(PlayerEffectSpawner.instance.hitGroundedEffect, new Vector2(player.centerEffectPos.position.x - player.facingDir * .8f, player.centerEffectPos.position.y), Quaternion.identity);

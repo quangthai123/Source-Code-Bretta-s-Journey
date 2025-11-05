@@ -97,15 +97,15 @@ public class PlayerAttackState : PlayerStates
         base.Update();
         if (player.CheckGrounded())
         {
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
             if(airAttacking)
                 stateMachine.ChangeState(player.lightGroundedState);
         }
         else {
             if(InputManager.Instance.moveDir.x == 0)
-                rb.velocity = new Vector2(horizontalInput * 0.8f * player.moveSpeed, rb.velocity.y);
+                rb.linearVelocity = new Vector2(horizontalInput * 0.8f * player.moveSpeed, rb.linearVelocity.y);
             else
-                rb.velocity = new Vector2(InputManager.Instance.moveDir.x * 0.8f * player.moveSpeed, rb.velocity.y);
+                rb.linearVelocity = new Vector2(InputManager.Instance.moveDir.x * 0.8f * player.moveSpeed, rb.linearVelocity.y);
         }
         if (finishAnim && player.CheckGrounded())
             stateMachine.ChangeState(player.idleState);
@@ -116,12 +116,28 @@ public class PlayerAttackState : PlayerStates
     protected override void ChangeStateByInput()
     {
         base.ChangeStateByInput();
-        if ((Input.GetKeyDown(KeyCode.LeftShift) || InputManager.Instance.dashed) && Time.time - player.dashTimer > player.dashCooldown)
+        if (player.CheckGrounded())
         {
-            if(player.CheckGrounded())
+            if ((Input.GetKeyDown(KeyCode.LeftShift) || InputManager.Instance.dashed) && Time.time - player.dashTimer > player.dashCooldown)
+            {
                 stateMachine.ChangeState(player.dashState);
-            else
-                stateMachine.ChangeState(player.airDashState);
+            }
+        }
+        else
+        {
+            if ((Input.GetKeyDown(KeyCode.LeftShift) || InputManager.Instance.dashed))
+            {
+                if (!player.CheckAirDashGrounded() && !player.airDashState.airDashed)
+                {
+                    if (player.TempGameData.GainedAbilities[1])
+                        stateMachine.ChangeState(player.airDashState);
+                }
+                else if (player.CheckAirDashGrounded())
+                {
+                    Debug.Log("Dash from fall");
+                    player.canChangeToDashState = true;
+                }
+            }
         }
         if (player.CheckGrounded() && (Input.GetKeyDown(KeyCode.J) || InputManager.Instance.parried))
             stateMachine.ChangeState(player.shieldState);

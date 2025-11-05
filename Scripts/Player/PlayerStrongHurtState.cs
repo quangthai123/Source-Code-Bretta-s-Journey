@@ -24,7 +24,7 @@ public class PlayerStrongHurtState : PlayerStates
     public override void Update()
     {
         base.Update();
-        if (rb.velocity.y < -.1f)
+        if (rb.linearVelocity.y < -.1f)
             felt = true;
         if (felt && player.CheckGrounded() && !player.isDead)
             stateMachine.ChangeState(player.knockoutState);

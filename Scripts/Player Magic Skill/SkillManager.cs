@@ -5,8 +5,6 @@ using UnityEngine;
 public class SkillManager : MonoBehaviour
 {
     public static SkillManager instance;
-    public int equippedSkillSlot1Index;
-    public int equippedSkillSlot2Index;
     public List<Skill> skillList;
 
     private GameDatas tempGameData;
@@ -17,11 +15,10 @@ public class SkillManager : MonoBehaviour
             Destroy(gameObject);
         else
             instance = this;
+        DontDestroyOnLoad(gameObject);
         tempGameData = Resources.Load<GameDatas>("TempGameData");
         skills = transform.Find("Skills");
         LoadSkills();
-        equippedSkillSlot1Index = tempGameData.magicGemEquippedItems[0];
-        equippedSkillSlot2Index = tempGameData.magicGemEquippedItems[1];
     }
     private void LoadSkills()
     {
@@ -33,29 +30,29 @@ public class SkillManager : MonoBehaviour
     }
     public bool CanUseSkillSlot1()
     {
-        return skillList[equippedSkillSlot1Index].cooldownTimer <= 0 && Player.Instance.playerStats.currentMana >= skillList[equippedSkillSlot1Index].manaToUse;
+        return skillList[tempGameData.magicGemEquippedItems[0]].cooldownTimer <= 0 && Player.Instance.playerStats.currentMana >= skillList[tempGameData.magicGemEquippedItems[0]].manaToUse;
     }
-    public float GetSkill1Cooldown() => skillList[equippedSkillSlot1Index].cooldown;
-    public Color GetSkill1BorderColor() => skillList[equippedSkillSlot1Index].avatarBorderColor;
+    public float GetSkill1Cooldown() => skillList[tempGameData.magicGemEquippedItems[0]].cooldown;
+    public Color GetSkill1BorderColor() => skillList[tempGameData.magicGemEquippedItems[0]].avatarBorderColor;
     public bool CanUseSkillSlot2()
     {
-        return skillList[equippedSkillSlot2Index].cooldownTimer <= 0 && Player.Instance.playerStats.currentMana >= skillList[equippedSkillSlot2Index].manaToUse;
+        return skillList[tempGameData.magicGemEquippedItems[1]].cooldownTimer <= 0 && Player.Instance.playerStats.currentMana >= skillList[tempGameData.magicGemEquippedItems[1]].manaToUse;
     }
-    public float GetSkill2Cooldown() => skillList[equippedSkillSlot2Index].cooldown;
-    public Color GetSkill2BorderColor() => skillList[equippedSkillSlot2Index].avatarBorderColor;
-    public void UseSkillSlot1() => skillList[equippedSkillSlot1Index].UseSkill(false);
-    public void RunCdSkill1() => skillList[equippedSkillSlot1Index].ResetCd();
-    public void RunCdSkill2() => skillList[equippedSkillSlot2Index].ResetCd();
+    public float GetSkill2Cooldown() => skillList[tempGameData.magicGemEquippedItems[1]].cooldown;
+    public Color GetSkill2BorderColor() => skillList[tempGameData.magicGemEquippedItems[1]].avatarBorderColor;
+    public void UseSkillSlot1() => skillList[tempGameData.magicGemEquippedItems[0]].UseSkill(false);
+    public void RunCdSkill1() => skillList[tempGameData.magicGemEquippedItems[0]].ResetCd();
+    public void RunCdSkill2() => skillList[tempGameData.magicGemEquippedItems[1]].ResetCd();
     public void UseSkillSlot2()
     {
-        skillList[equippedSkillSlot2Index].UseSkill(true);
+        skillList[tempGameData.magicGemEquippedItems[1]].UseSkill(true);
     }
     public void SetUsingSkill(int skill, int index)
     {
         if (skill == 0)
-            equippedSkillSlot1Index = index;
+            tempGameData.magicGemEquippedItems[0] = index;
         else
-            equippedSkillSlot2Index = index;
+            tempGameData.magicGemEquippedItems[1] = index;
     }
     public int GetManaToUse(int skillIndex)
     {
@@ -63,10 +60,10 @@ public class SkillManager : MonoBehaviour
         switch(skillIndex)
         {
             case 1:
-                result = skillList[equippedSkillSlot2Index].manaToUse;
+                result = skillList[tempGameData.magicGemEquippedItems[1]].manaToUse;
                 break;
             default:
-                result = skillList[equippedSkillSlot1Index].manaToUse;
+                result = skillList[tempGameData.magicGemEquippedItems[0]].manaToUse;
                 break;
         }
         return result;

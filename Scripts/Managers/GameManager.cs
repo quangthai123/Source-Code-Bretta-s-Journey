@@ -6,20 +6,27 @@ using Cinemachine;
 
 public class GameManager : MonoBehaviour
 {
+    [Header("Spawn dontDestroyOnLoad GO to test in specific scene")]
+    [SerializeField] private Transform enemiesActiveInSceneTransfToTest;
+    [SerializeField] private Transform audioManagerTransfToTest;
+    [SerializeField] private Transform saveManagerTransfToTest;
+    [SerializeField] private Transform skillManagerTransfToTest;
+    [SerializeField] private Transform frameRateTransfToTest;
+    [SerializeField] private Transform inventoryTransfToTest;
+    [SerializeField] private Transform loadSceneCanvasTransfToTest;
+    [SerializeField] private Transform playerEffectSpawnerToTest;
+    [SerializeField] private Transform enemiesEffectSpawnerTransfToTest;
+    [SerializeField] private Transform damageTxtSpawnerTransfToTest;
+    [SerializeField] private Transform mobileInputManagerTransfToTest;
+    [SerializeField] private Transform notificationUITransfToTest;
     public static GameManager Instance;
     private Player player;
     private GameDatas tempGameData;
     private EnemiesActiveInScene enemiesAllScene;
-
-    private bool LoadUIComponentBeforeDeactive;
     public bool pressedResetGame { get; private set; }
     private float playedTimeFloat;
-    [Header("UI")]
-    [SerializeField] private InventoryUI inventoryUI;
-    [SerializeField] private GameObject placeUI;
-    [SerializeField] private GameObject mainUI;
-    [SerializeField] private GameObject controlUI;
-    [SerializeField] private GameObject currencyUI;
+    private InventoryUI inventoryUI;
+    //[SerializeField] private GameObject placeUI;
 
     private CinemachineImpulseSource screenShake;
     [Header("Screen Shake")]
@@ -31,40 +38,94 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         else
             Instance = this;
-        SetActiveTrueInventoryUIToLoad();
+
+        tempGameData = Resources.Load<GameDatas>("TempGameData");
+#if UNITY_EDITOR
+        SpawnPersistentGO();
+#endif
+    }
+    private void SpawnPersistentGO()
+    {
+        if(EnemiesActiveInScene.instance == null)
+            Instantiate(enemiesActiveInSceneTransfToTest);
+        if(AudioManager.instance == null)
+            Instantiate(audioManagerTransfToTest);
+        if(SaveManager.instance == null)
+            Instantiate(saveManagerTransfToTest);
+        if(SkillManager.instance == null)
+            Instantiate(skillManagerTransfToTest);
+        if(FrameRateManager.Instance == null)
+            Instantiate(frameRateTransfToTest);
+        if(Inventory.Instance == null)
+            Instantiate(inventoryTransfToTest);
+        if(LoadingScene.instance == null)
+            Instantiate(loadSceneCanvasTransfToTest);
+        if(PlayerEffectSpawner.instance == null)
+            Instantiate(playerEffectSpawnerToTest);
+        if(EnemiesEffectSpawner.Instance == null)
+            Instantiate(enemiesEffectSpawnerTransfToTest);
+        if (DamageTextSpawner.Instance == null)
+            Instantiate(damageTxtSpawnerTransfToTest);
+        if (InputManager.Instance == null)
+            Instantiate(mobileInputManagerTransfToTest);
+        //if (InventoryUI.Instance == null && SceneManager.GetActiveScene().name != "MainMenu") 
+        //{ 
+        //    Instantiate(inventoryUITransfToTest);
+        //    Debug.Log("Instantiate InventoryUI");
+        //}
+        //if (InGameCanvas.Instance == null && SceneManager.GetActiveScene().name != "MainMenu")
+        //{
+        //    Instantiate(inGameUITransfToTest);
+        //    Debug.Log("Instantiate IngameUI");
+        //}
+        if (NotificationCanvas.Instance == null)
+        {
+            Instantiate(notificationUITransfToTest);
+            Debug.Log("Instantiate NotificationUI");
+        }
     }
     private void Start()
     {
         player = Player.Instance;
-        tempGameData = Resources.Load<GameDatas>("TempGameData");
         enemiesAllScene = EnemiesActiveInScene.instance;
         screenShake = GetComponent<CinemachineImpulseSource>();
+        inventoryUI = InventoryUI.Instance;
         if (tempGameData.tempCurrentScene == tempGameData.soulScene)
         {
             Instantiate(player.playerSoul, tempGameData.soulPos, Quaternion.identity);
         }
         pressedResetGame = false;
-        LoadUIComponentBeforeDeactive = false;
         playedTimeFloat = tempGameData.playedTime;
-        if (placeUI != null)
-        {
-            placeUI.SetActive(false);
-        }
+        //if (placeUI != null)
+        //{
+        //    placeUI.SetActive(false);
+        //}
+        LoadingScene.instance.StartFadeOut(.15f);
+        SetPlayerPosBetweenScene();
+    }
+    private void SetPlayerPosBetweenScene()
+    {
+        if(player == null)
+            return;
+        player.gameObject.SetActive(true);
+        if (player.stateMachine.currentState != null)
+            player.stateMachine.ChangeState(player.idleState);
+        else
+            player.stateMachine.Initialize(player.idleState);
+        player.transform.position = tempGameData.initializePos;
+        if (player.facingDir != tempGameData.facingDir)
+            player.Flip();
     }
     private void Update()
     {
         playedTimeFloat += Time.deltaTime;
         tempGameData.playedTime = (int)playedTimeFloat;
-    }
-    private void LateUpdate()
-    {
-        if (!LoadUIComponentBeforeDeactive)
+
+        if(Input.GetKeyDown(KeyCode.I))
         {
-            LoadUIComponentBeforeDeactive = true;
-            inventoryUI.gameObject.SetActive(false);
+            OpenInventory();
         }
     }
-    public void SetActiveTrueInventoryUIToLoad() => inventoryUI.gameObject.SetActive(true);
     public void ShowAdToRevive()
     {
         Debug.Log("Watch ad to revive!");
@@ -114,15 +175,12 @@ public class GameManager : MonoBehaviour
         player.playerStats.currency = 0;
         player.playerStats.haveDied = true;
 
-        enemiesAllScene.ReviveAllEnemy();
-
         SaveManager.instance.SaveGame();
     }
     private void LoadScene() => SceneManager.LoadScene(tempGameData.currentScene);
     public void BackToMainMenu()
     {
-        LoadingScene.instance.gameObject.SetActive(true);
-        LoadingScene.instance.FadeIn();
+        LoadingScene.instance.StartFadeIn(1 / 6f, true);
         StartCoroutine(LoadMenuScene());
     }
     private IEnumerator LoadMenuScene()
@@ -133,30 +191,29 @@ public class GameManager : MonoBehaviour
     }
     public void OpenInventory()
     {
-        inventoryUI.gameObject.SetActive(true);
+        if(inventoryUI == null || inventoryUI.gameObject.activeInHierarchy) return;
+        inventoryUI.Open();
+        Player.Instance.DisablePlayerControl();
         Time.timeScale = 0f;
     }
     public void CloseInventory()
     {
-        inventoryUI.CloseAllLoreUI();
-        inventoryUI.gameObject.SetActive(false);
+        //inventoryUI.CloseAllLoreUI();
+        inventoryUI.Close();
+        Player.Instance.EnablePlayerControl();
         Time.timeScale = 1f;
     }
     public void ShowPlaceUI()
     {
-        placeUI.SetActive(true);
+        //placeUI.SetActive(true);
     }
     public void HideAllInGameUI()
     {
-        mainUI.SetActive(false);
-        currencyUI.SetActive(false);
-        controlUI.SetActive(false);
+        InGameCanvas.Instance.gameObject.SetActive(false);
     }
     public void ShowAllInGameUI()
     {
-        mainUI.SetActive(true);
-        currencyUI.SetActive(true);
-        controlUI.SetActive(true);
+        InGameCanvas.Instance.gameObject.SetActive(true);
     }
     public void CreateScreenShakeFx(Vector3 value)
     {

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerEnterRunState : PlayerOnGroundState
 {
+    private int preFacingDir;
     public PlayerEnterRunState(Player _player, PlayerStateMachine _stateMachine, string _animBoolName) : base(_player, _stateMachine, _animBoolName)
     {
     }
@@ -15,6 +16,7 @@ public class PlayerEnterRunState : PlayerOnGroundState
         {
             player.anim.speed = 1.25f;
         }
+        preFacingDir = player.facingDir;
     }
     public override void Exit()
     {
@@ -33,25 +35,25 @@ public class PlayerEnterRunState : PlayerOnGroundState
         if (InputManager.Instance.moveDir.x == 0)
         {
             if ((!player.CheckSlope() || player.CheckGetOutSlope()) && (player.stateMachine.currentState == player.jumpState || player.facingDir == -1))
-                rb.velocity = new Vector2(player.moveSpeed * horizontalInput, rb.velocity.y);
+                rb.linearVelocity = new Vector2(player.moveSpeed * horizontalInput, rb.linearVelocity.y);
             else if (!player.CheckSlope() || player.CheckGetOutSlope() && (player.stateMachine.currentState != player.jumpState || player.facingDir == 1))
-                rb.velocity = new Vector2(player.moveSpeed * horizontalInput, 0f);
+                rb.linearVelocity = new Vector2(player.moveSpeed * horizontalInput, 0f);
             else
             {
                 if (player.CheckJumpOnSlope() && player.stateMachine.currentState != player.jumpState)
-                    rb.velocity = new Vector2(player.moveSpeed * horizontalInput * -player.slopeMoveDir.x, player.moveSpeed * horizontalInput * -player.slopeMoveDir.y);
+                    rb.linearVelocity = new Vector2(player.moveSpeed * horizontalInput * -player.slopeMoveDir.x, player.moveSpeed * horizontalInput * -player.slopeMoveDir.y);
             }
         }
         else
         {
             if ((!player.CheckSlope() || player.CheckGetOutSlope()) && (player.stateMachine.currentState == player.jumpState || player.facingDir == -1))
-                rb.velocity = new Vector2(player.moveSpeed * InputManager.Instance.moveDir.x, rb.velocity.y);
+                rb.linearVelocity = new Vector2(player.moveSpeed * InputManager.Instance.moveDir.x, rb.linearVelocity.y);
             else if ((!player.CheckSlope() || player.CheckGetOutSlope()) && (player.stateMachine.currentState != player.jumpState || player.facingDir == 1))
-                rb.velocity = new Vector2(player.moveSpeed * InputManager.Instance.moveDir.x, 0f);
+                rb.linearVelocity = new Vector2(player.moveSpeed * InputManager.Instance.moveDir.x, 0f);
             else
             {
                 if (player.CheckJumpOnSlope() && player.stateMachine.currentState != player.jumpState)
-                    rb.velocity = new Vector2(player.moveSpeed * InputManager.Instance.moveDir.x * -player.slopeMoveDir.x, player.moveSpeed * InputManager.Instance.moveDir.x * -player.slopeMoveDir.y);
+                    rb.linearVelocity = new Vector2(player.moveSpeed * InputManager.Instance.moveDir.x * -player.slopeMoveDir.x, player.moveSpeed * InputManager.Instance.moveDir.x * -player.slopeMoveDir.y);
             }
         }
         if (finishAnim)
@@ -66,10 +68,9 @@ public class PlayerEnterRunState : PlayerOnGroundState
             Debug.Log("Change to dash State");
             stateMachine.ChangeState(player.dashState);
         }
-    }
-    public override void FixedUpdate()
-    {
-        base.FixedUpdate();
-
+        if (preFacingDir != player.facingDir)
+        {
+            stateMachine.ChangeState(player.turnRunState);
+        }
     }
 }

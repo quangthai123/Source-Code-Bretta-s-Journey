@@ -20,7 +20,7 @@ public class PlayerHurtState : PlayerStates
     {
         base.Exit();
         if (stateMachine.currentState != player.dashState)
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
         //if(stateMachine.currentState != player.deathState)
         //    player.SetKnockedFalseAfterBeHit();
         //else
@@ -30,13 +30,13 @@ public class PlayerHurtState : PlayerStates
     public override void Update()
     {
         base.Update();
-        if (rb.velocity.y < -.1f)
+        if (rb.linearVelocity.y < -.1f)
             felt = true;
         if(!player.CheckGroundedWhileHurtOrParry())
-            rb.velocity = new Vector2(0f, rb.velocity.y);
+            rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
         if (felt && player.CheckGrounded())
         {
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
             if (player.isDead)
                 stateMachine.ChangeState(player.deathState);
         }

@@ -23,6 +23,7 @@ public class SaveManager : MonoBehaviour
             Destroy(gameObject);
         else
             instance = this;
+        DontDestroyOnLoad(gameObject);
         tempGameData = Resources.Load<GameDatas>("TempGameData");
         dataHandlerSlot1 = new FileDataHandler(Application.persistentDataPath, fileNameSlot1);
         dataHandlerSlot2 = new FileDataHandler(Application.persistentDataPath, fileNameSlot2);
@@ -58,6 +59,7 @@ public class SaveManager : MonoBehaviour
     }
     public void StartGameData1()
     {
+        LoadingScene.instance.StartFadeIn(.15f, true);
         if (dataHandlerSlot1.Load() != null)
         {
             tempGameData.GetDataFrom(dataHandlerSlot1.Load());
@@ -71,8 +73,6 @@ public class SaveManager : MonoBehaviour
         tempGameData.currentHealth = (int)tempGameData.maxHealth.GetValue();
         tempGameData.currentMana = 0;
         tempGameData.fullHealFlaskQuantity = tempGameData.flaskQuantity;
-        LoadingScene.instance.gameObject.SetActive(true);
-        LoadingScene.instance.FadeIn();
         Invoke("LoadScene", 1f);
         //SceneManager.LoadScene(tempGameData.currentScene);
     }
@@ -88,6 +88,7 @@ public class SaveManager : MonoBehaviour
     }
     public void StartGameData2()
     {
+        LoadingScene.instance.StartFadeIn(.15f, true);
         if (dataHandlerSlot2.Load() != null)
             tempGameData.GetDataFrom(dataHandlerSlot2.Load());
         else
@@ -99,8 +100,6 @@ public class SaveManager : MonoBehaviour
         tempGameData.currentHealth = (int)tempGameData.maxHealth.GetValue();
         tempGameData.currentMana = 0;
         tempGameData.fullHealFlaskQuantity = tempGameData.flaskQuantity;
-        LoadingScene.instance.gameObject.SetActive(true);
-        LoadingScene.instance.FadeIn();
         Invoke("LoadScene", 1f);
         //SceneManager.LoadScene(tempGameData.currentScene);
     }
@@ -111,6 +110,7 @@ public class SaveManager : MonoBehaviour
     }
     public void StartGameData3()
     {
+        LoadingScene.instance.StartFadeIn(.15f, true);
         if (dataHandlerSlot3.Load() != null)
             tempGameData.GetDataFrom(dataHandlerSlot3.Load());
         else
@@ -122,8 +122,6 @@ public class SaveManager : MonoBehaviour
         tempGameData.currentHealth = (int)tempGameData.maxHealth.GetValue();
         tempGameData.currentMana = 0;
         tempGameData.fullHealFlaskQuantity = tempGameData.flaskQuantity;
-        LoadingScene.instance.gameObject.SetActive(true);
-        LoadingScene.instance.FadeIn();
         Invoke("LoadScene", 1f);
         //SceneManager.LoadScene(tempGameData.currentScene);
     }

@@ -14,9 +14,8 @@ public class MagicSkillUI : InventoryLogic
     [SerializeField] private Transform equipSlotSelector;
     public GameObject LockGemSlot2Image;
     [SerializeField] private int selectedSkillNum;
-    protected override void Awake()
+    protected void Awake()
     {
-        base.Awake();
         if (Instance != null)
             Destroy(gameObject);
         else
@@ -74,11 +73,14 @@ public class MagicSkillUI : InventoryLogic
     {
         base.AddNewItemSign();
         tempGameData.newMagicGemItems = this.newItems;
+        GetComponent<SkillUIController>().ShowNewSignOnMagicTab();
     }
     protected override void RemoveNewSign(Image _image)
     {
         base.RemoveNewSign(_image);
         tempGameData.newMagicGemItems = this.newItems;
+        if (newItems.Count < 1)
+            GetComponent<SkillUIController>().DisableNewSignOnMagicTab();
     }
     private void DeactivateEquipButton()
     {
@@ -113,7 +115,7 @@ public class MagicSkillUI : InventoryLogic
             return;
         }
         Debug.Log("Click magic gem!");
-        selectImage.SetActive(true);
+        selector.SetActive(true);
         selectedItemImage.gameObject.SetActive(true);
 
         if (selectedMagicGemEquippedTransf != null && selectedMagicGemEquippedTransf.GetComponent<Image>().color.a == 0f)
@@ -139,8 +141,7 @@ public class MagicSkillUI : InventoryLogic
                 image.color = new Color(image.color.r, image.color.g, image.color.b, 0f);
             }
         }
-        selectImage.SetActive(false);
-        loreUI.SetActive(false);
+        selector.SetActive(false);
         itemInforUI.SetActive(false);
         selectedItemImage.gameObject.SetActive(false);
     }
@@ -174,11 +175,14 @@ public class MagicSkillUI : InventoryLogic
                 selectedItemImage.gameObject.SetActive(true);
                 selectedItemName.text = item.itemName;
                 selectedItemDescription.text = item.itemDescription;
-                selectedItemLore.text = item.itemLore;
+                selectedItemLoreTxt.text = item.itemLore;
+                selectedLore = item.itemLore;
                 break;
             }
         }
         itemInforUI.SetActive(true);
+        if(scrollViewHandler != null)
+            StartCoroutine(scrollViewHandler.ResetScrollView());
     }
 
     public void OnClickEquippedGem(Image image)
@@ -216,7 +220,7 @@ public class MagicSkillUI : InventoryLogic
         selectedMagicGemEquippedTransf.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);
         selectedMagicGemHadTransf.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0);
         //selectedMagicGemHadTransf = null;
-        selectImage.gameObject.SetActive(false);
+        selector.gameObject.SetActive(false);
         DeactivateEquipButton();
         ActivateUnEquipButton();
         tempGameData.magicGemEquippedItems[selectedSkillNum] = Inventory.Instance.GetItemIndexBySprite(ItemType.MagicGem, selectedMagicGemEquippedTransf.GetComponent<Image>().sprite);
@@ -241,8 +245,16 @@ public class MagicSkillUI : InventoryLogic
 
     private void SetHadGemSelectorPos(Transform transf)
     {
-        selectImage.SetActive(true);
-        selectImage.transform.position = new Vector2(transf.position.x, transf.position.y + selectImageOffSetYWithHadItem);
-        selectImage.transform.localScale = new Vector2(3.67f, 3.65f);
+        selector.SetActive(true);
+        selector.transform.position = new Vector2(transf.position.x, transf.position.y + selectImageOffSetYWithHadItem);
+        selector.transform.localScale = new Vector2(3.67f, 3.65f);
+    }
+    protected override void LoadNewItemsSign()
+    {
+        base.LoadNewItemsSign();
+        if (newItems != null && newItems.Count >= 1)
+            GetComponent<SkillUIController>().ShowNewSignOnMagicTab();
+        else
+            GetComponent<SkillUIController>().DisableNewSignOnMagicTab();
     }
 }

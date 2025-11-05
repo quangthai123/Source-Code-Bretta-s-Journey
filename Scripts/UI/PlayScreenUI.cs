@@ -37,11 +37,10 @@ public class PlayScreenUI : MonoBehaviour
     [SerializeField] private GameObject controlUI;
     private void Awake()
     {
-        if(instance != null)
+        if (instance != null)
             Destroy(gameObject);
         else
             instance = this;
-        //tempGameData = Resources.Load<GameDatas>("TempGameData");
         foreach (GameObject go in swordAvatarUIList)
         {
             go.SetActive(false);
@@ -64,17 +63,17 @@ public class PlayScreenUI : MonoBehaviour
     {
         playerStats = Player.Instance.playerStats;
         this.currentSwordLv = playerStats.swordLv;
-        swordAvatarUIList[this.currentSwordLv].SetActive(true);       
+        swordAvatarUIList[this.currentSwordLv].SetActive(true);
         haveDiedd = SaveManager.instance.tempGameData.haveDied;
         currencyValueUI = playerStats.currency;
         currencyText.text = currencyValueUI + "";
-        if (SaveManager.instance.tempGameData.haveDied) 
+        if (SaveManager.instance.tempGameData.haveDied)
         {
             resistManaBar.localScale = new Vector3(1f, 2.4f, 1f);
             resistManaBar2.localScale = new Vector3(-1f, 2.4f, 1f);
             amountOfResistManaPerSecond = 2.4f;
         }
-        else 
+        else
         {
             resistManaBar.localScale = new Vector3(1f, 0, 1f);
             resistManaBar2.localScale = new Vector3(-1f, 0f, 1f);
@@ -84,7 +83,24 @@ public class PlayScreenUI : MonoBehaviour
 
     }
     public void HideControlUI() => controlUI.SetActive(false);
-    public void ShowControlUI() => controlUI.SetActive(true);
+    public void ShowControlUI()
+    {
+        //if (controlUI.activeInHierarchy)
+        //    return;
+        //CanvasGroup canvasGroup = controlUI.GetComponent<CanvasGroup>();
+        //canvasGroup.alpha = 0;
+        //controlUI.SetActive(true);
+        //StartCoroutine(ShowControlUIFadeFx(canvasGroup));
+    }
+    private IEnumerator ShowControlUIFadeFx(CanvasGroup cg)
+    {
+        while (cg.alpha < 1f) 
+        { 
+            yield return new WaitForSecondsRealtime(.1f);
+            cg.alpha += .2f;
+        }
+        cg.alpha = 1f;
+    }
     void Update()
     {
         if (Player.Instance.isDead)
@@ -121,13 +137,12 @@ public class PlayScreenUI : MonoBehaviour
             Debug.Log("Load lai scene bang playscreenUI script");
             finishDeductCurrencyUI = false;
             finishManaResist = false;
-            LoadingScene.instance.StartFadeIn();
+            LoadingScene.instance.StartFadeIn(1 / 6f, false);
             Player.Instance.playerStats.Resting();
             Player.Instance.isKnocked = true;
             Invoke("LoadScene", .5f);
         }
     }
-    private void LoadScene() => SceneManager.LoadScene(SaveManager.instance.tempGameData.currentScene);
     private void GetFrameRate()
     {
         fps = (int)(1f / Time.deltaTime);
@@ -239,7 +254,7 @@ public class PlayScreenUI : MonoBehaviour
         finishDeductCurrencyUI = false;
         if (resistManaBar.localScale.y == 2.4f && currencyValueUI == Player.Instance.playerStats.currency) 
         {
-            LoadingScene.instance.StartFadeIn();
+            LoadingScene.instance.StartFadeIn(1 / 6f, false);
             playerStats.Resting();
             Player.Instance.isKnocked = true;
             Invoke("LoadScene", .5f);

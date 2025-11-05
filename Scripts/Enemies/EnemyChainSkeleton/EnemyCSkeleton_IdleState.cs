@@ -28,7 +28,7 @@ public class EnemyCSkeleton_IdleState : EnemyStates
     public override void Update()
     {
         base.Update();
-        rb.velocity = Vector2.zero;
+        rb.linearVelocity = Vector2.zero;
         if (enemy.DetectedPlayer() && Vector2.Distance(enemy.transform.position, player.transform.position) < 2f)
         {
             stateMachine.ChangeState(enemy.walkState);

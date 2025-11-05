@@ -5,7 +5,7 @@ using UnityEngine;
 public class StartBoss1PhaseTrigger : MonoBehaviour
 {
     [SerializeField] private GameObject challengeText;
-    [SerializeField] private GameObject notifiBoss1PhaseUI;
+    //[SerializeField] private GameObject notifiBoss1PhaseUI;
     [SerializeField] private Boss1 boss1;
     [SerializeField] private ScenarioGroundBoss1 scenarioGroundBoss1;
     private bool canChallenge = false;
@@ -14,7 +14,7 @@ public class StartBoss1PhaseTrigger : MonoBehaviour
         if(SaveManager.instance.tempGameData.winBoss1)
             gameObject.SetActive(false);
         challengeText.SetActive(false);
-        notifiBoss1PhaseUI.SetActive(false);
+        //notifiBoss1PhaseUI.SetActive(false);
     }
     private void Update()
     {
@@ -27,7 +27,7 @@ public class StartBoss1PhaseTrigger : MonoBehaviour
             {
                 canChallenge = false;
                 InputManager.Instance.moveDir.y = 0;
-                notifiBoss1PhaseUI.SetActive(true);
+                //notifiBoss1PhaseUI.SetActive(true);
                 GameManager.Instance.HideAllInGameUI();
             }
         } else
@@ -36,11 +36,11 @@ public class StartBoss1PhaseTrigger : MonoBehaviour
     public void AcceptChallengeUILogic()
     {
         challengeText.SetActive(false);
-        notifiBoss1PhaseUI.SetActive(false);
+        //notifiBoss1PhaseUI.SetActive(false);
     }
     public void CloseNotifiBoss1PhaseUI()
     {
-        notifiBoss1PhaseUI.SetActive(false);
+        //notifiBoss1PhaseUI.SetActive(false);
         GameManager.Instance.ShowAllInGameUI();
         canChallenge = true;
     }

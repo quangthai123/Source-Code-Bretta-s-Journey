@@ -27,7 +27,7 @@ public class Enemy1_WolfRunState : EnemyStates
     public override void Exit()
     {
         base.Exit();
-        rb.velocity = Vector3.zero;
+        rb.linearVelocity = Vector3.zero;
         enemy.anim.speed = 1f;
     }
 
@@ -40,20 +40,20 @@ public class Enemy1_WolfRunState : EnemyStates
             FlipToFacePlayer();
             if (enemy.CanAttackPlayer())
             {
-                rb.velocity = Vector2.zero;
+                rb.linearVelocity = Vector2.zero;
                 stateMachine.ChangeState(enemy.attackState);
             }
             else
             {
                 enemy.anim.speed = 1.5f;
-                rb.velocity = new Vector2(enemy.moveSpeed * enemy.facingDir * 1.5f, 0f);
+                rb.linearVelocity = new Vector2(enemy.moveSpeed * enemy.facingDir * 1.5f, 0f);
             }
         } else
         {
-            rb.velocity = new Vector2(enemy.moveSpeed * enemy.facingDir, 0f);
+            rb.linearVelocity = new Vector2(enemy.moveSpeed * enemy.facingDir, 0f);
             if (enemy.CheckNotFrontGround() || enemy.CheckWalled())
             {
-                rb.velocity = Vector2.zero;
+                rb.linearVelocity = Vector2.zero;
                 enemy.Flip();
             }
             if (stateDuration < 0f)

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,7 +6,8 @@ using UnityEngine;
 public class LoadingScene : MonoBehaviour
 {
     public static LoadingScene instance;
-    private Animator anim; 
+    private CanvasGroup canvasGroup;
+    [SerializeField] private GameObject logoImage;
     void Awake()
     {
         if (instance != null)
@@ -13,25 +15,46 @@ public class LoadingScene : MonoBehaviour
         else
             instance = this;
         DontDestroyOnLoad(gameObject);
-        anim = GetComponent<Animator>();
+        canvasGroup = GetComponent<CanvasGroup>();
+        canvasGroup.blocksRaycasts = true;
+        canvasGroup.alpha = 1f;
     }
-    public void FadeIn()
+    private IEnumerator FadeIn(float fadeInTime, bool showLogo, Action callBack = null)
     {
-        anim.SetBool("FadeOut", false);
-        anim.SetBool("FadeIn", true);
+        if (showLogo)
+            logoImage.SetActive(true);
+        else
+            logoImage.SetActive(false);
+        canvasGroup.alpha = 0f;
+        while (canvasGroup.alpha < 1f)
+        {
+            yield return new WaitForSecondsRealtime(.01f);
+            canvasGroup.alpha += 1/fadeInTime/ 100f;
+        }
+        canvasGroup.alpha = 1f;
+        callBack?.Invoke();
     }
-    public void FadeOut()
+    private IEnumerator FadeOut(float fadeOutTime, Action callBack = null)
     {
-        anim.SetBool("FadeIn", false);
-        anim.SetBool("FadeOut", true);
+        canvasGroup.alpha = 1f;
+        while (canvasGroup.alpha > 0f)
+        {
+            yield return new WaitForSecondsRealtime(.01f);
+            canvasGroup.alpha -= 1 / fadeOutTime / 100f;
+        }
+        canvasGroup.alpha = 0f;
+        canvasGroup.blocksRaycasts = false;
+        callBack?.Invoke();
     }
-    private void OnFinishFadeOut()
+    public void StartFadeIn(float fadeInTime, bool showLogo, Action callBack = null)
     {
-        gameObject.SetActive(false);
+        canvasGroup.blocksRaycasts = true;
+        StopAllCoroutines();
+        StartCoroutine(FadeIn(fadeInTime, showLogo, callBack));
     }
-    public void StartFadeIn()
+    public void StartFadeOut(float fadeOutTime, Action callBack = null)
     {
-        gameObject.SetActive(true);
-        FadeIn();
+        StopAllCoroutines();
+        StartCoroutine(FadeOut(fadeOutTime, callBack));
     }
 }

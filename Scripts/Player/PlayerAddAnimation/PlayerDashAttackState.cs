@@ -14,7 +14,7 @@ public class PlayerDashAttackState : PlayerStates
         //player.StartCoroutine(player.ShadowFxOnDashAttackState());
         player.StartCoroutine(player.GetComponent<EntityFx>().QuickFlashFX()); 
         player.endDashAttack = false;
-        rb.velocity = Vector2.zero;
+        rb.linearVelocity = Vector2.zero;
         player.normalCol.SetActive(false);
         player.dashCol.SetActive(true);
         player.isKnocked = true;
@@ -45,14 +45,14 @@ public class PlayerDashAttackState : PlayerStates
         {
             if (player.CheckGetOutSlope() && player.facingDir == 1)
                 //rb.AddForce(new Vector2(player.dashAttackSpeed * player.facingDir, 0f), ForceMode2D.Impulse);
-                rb.velocity = new Vector2(player.dashSpeed * 1.1f * player.facingDir, 0f);
+                rb.linearVelocity = new Vector2(player.dashSpeed * 1.1f * player.facingDir, 0f);
             else if (player.CheckSlope() && stateMachine.currentState != player.jumpState)
                 //rb.AddForce(new Vector2(player.dashAttackSpeed * player.facingDir * -player.slopeMoveDir.x, player.dashAttackSpeed * player.facingDir * -player.slopeMoveDir.y), ForceMode2D.Impulse);
-                rb.velocity = new Vector2(player.dashSpeed * 1.1f * player.facingDir * -player.slopeMoveDir.x, player.dashSpeed * 1.1f * player.facingDir * -player.slopeMoveDir.y);
+                rb.linearVelocity = new Vector2(player.dashSpeed * 1.1f * player.facingDir * -player.slopeMoveDir.x, player.dashSpeed * 1.1f * player.facingDir * -player.slopeMoveDir.y);
             else
                 //rb.AddForce(new Vector2(player.dashAttackSpeed * player.facingDir, rb.velocity.y), ForceMode2D.Impulse);
-                rb.velocity = new Vector2(player.dashSpeed * 1.1f * player.facingDir, rb.velocity.y);
+                rb.linearVelocity = new Vector2(player.dashSpeed * 1.1f * player.facingDir, rb.linearVelocity.y);
         } else
-            rb.velocity = new Vector2(0f, rb.velocity.y);
+            rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
     }
 }

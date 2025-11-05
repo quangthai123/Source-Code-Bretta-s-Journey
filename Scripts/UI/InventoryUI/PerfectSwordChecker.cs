@@ -27,8 +27,10 @@ public class PerfectSwordChecker : MonoBehaviour
     [SerializeField] private float activePairDuration = .5f;
     public bool isMerging { get; private set; } = false;
     private Dictionary<int, int> swordPairsIndex = new Dictionary<int, int>();
+    private GameDatas tempGameData;
     void Start()
     {
+        tempGameData = SaveManager.instance.tempGameData;
         swordPieceUI = GetComponent<SwordPieceUI>();
         activatedSwordPairNoti = transform.Find("Activate Pair Noti").GetComponent<ActivatedSwordPairNoti>();
         LoadSwordPairsIndex();
@@ -52,12 +54,12 @@ public class PerfectSwordChecker : MonoBehaviour
     private void Update()
     {
         if(equippedSwordPieceList == null)
-            equippedSwordPieceList = Inventory.Instance.swordPieceEquippedItems;       
+            equippedSwordPieceList = tempGameData.swordPieceEquippedItems;       
     }
     private void LoadPerfectSwordEquipped()
     {
         int cnt = 0;
-        List<int> perfectSwordsEquipped = SaveManager.instance.tempGameData.perfectSwordsEquipped;
+        List<int> perfectSwordsEquipped = tempGameData.perfectSwordsEquipped;
         foreach (int index in perfectSwordsEquipped)
         {
             if(index != -1)
@@ -78,7 +80,7 @@ public class PerfectSwordChecker : MonoBehaviour
     }
     private void LoadPerfectSwordHad()
     {
-        if (SaveManager.instance.tempGameData.perfectSwordsHad.Count < 1)
+        if (tempGameData.perfectSwordsHad.Count < 1)
             return;
         int cnt = 0;
         foreach (Transform transf in swordContainers)
@@ -86,10 +88,10 @@ public class PerfectSwordChecker : MonoBehaviour
             if(!transf.GetChild(0).gameObject.activeInHierarchy)
             {
                 transf.GetChild(0).GetComponent<Image>().sprite = Inventory.Instance.GetSpriteByItemIndex(ItemType.PerfectSword,
-                    SaveManager.instance.tempGameData.perfectSwordsHad[cnt++]);
+                    tempGameData.perfectSwordsHad[cnt++]);
                 transf.GetChild(0).gameObject.SetActive(true);
                 transf.parent.GetChild(1).gameObject.SetActive(true);
-                if (cnt == SaveManager.instance.tempGameData.perfectSwordsHad.Count)
+                if (cnt == tempGameData.perfectSwordsHad.Count)
                     break;
             }
         }
@@ -98,12 +100,12 @@ public class PerfectSwordChecker : MonoBehaviour
     private void LoadHadPerfectSwordBorder()
     {
         int numEquipped = 0;
-        foreach(int i in SaveManager.instance.tempGameData.perfectSwordsEquipped)
+        foreach(int i in tempGameData.perfectSwordsEquipped)
         {
             if(i!=-1)
                 numEquipped++;
         }
-        int num = SaveManager.instance.tempGameData.perfectSwordsHad.Count + numEquipped;
+        int num = tempGameData.perfectSwordsHad.Count + numEquipped;
         for(int i = 0; i < num; i++)
         {
             swordContainers[i].parent.GetChild(1).gameObject.SetActive(true);    
@@ -239,11 +241,11 @@ public class PerfectSwordChecker : MonoBehaviour
         for (int i = 1; i <= 4; i++)
         {
             bigSlotMerging.Find("Slot" + i).gameObject.SetActive(false);
-            SaveManager.instance.tempGameData.swordPieceHadItems.Remove(swordPiecesToCheck[i - 1]);
-            SaveManager.instance.tempGameData.swordPieceEquippedItems[SaveManager.instance.tempGameData.swordPieceEquippedItems.IndexOf(swordPiecesToCheck[i - 1])] = -1;
-            SaveManager.instance.tempGameData.swordPieceMergedItems.Add(swordPiecesToCheck[i - 1]);
+            tempGameData.swordPieceHadItems.Remove(swordPiecesToCheck[i - 1]);
+            tempGameData.swordPieceEquippedItems[tempGameData.swordPieceEquippedItems.IndexOf(swordPiecesToCheck[i - 1])] = -1;
+            tempGameData.swordPieceMergedItems.Add(swordPiecesToCheck[i - 1]);
         }
-        SaveManager.instance.tempGameData.perfectSwordsEquipped[mergeIndex] = swordPiecesToCheck[0];
+        tempGameData.perfectSwordsEquipped[mergeIndex] = swordPiecesToCheck[0];
         Player.Instance.playerStatsWithItems.EquipPerfectSword(swordPiecesToCheck[0]);
         swordPieceUI.LoadHadItemUI();
         swordPieceUI.LoadEquippedItemUI();
@@ -350,7 +352,7 @@ public class PerfectSwordChecker : MonoBehaviour
                 break;
             }
         }
-        SaveManager.instance.tempGameData.perfectSwordsHad.Add(Inventory.Instance.GetItemIndexBySprite(ItemType.PerfectSword, perfectSwordSprite));
+        tempGameData.perfectSwordsHad.Add(Inventory.Instance.GetItemIndexBySprite(ItemType.PerfectSword, perfectSwordSprite));
         for (int i = 0; i < swordPieceUI.bigSlot.Count; i++)
         {
             if (swordPieceUI.bigSlot[i].Find("SelectBigSlot"))
@@ -360,11 +362,11 @@ public class PerfectSwordChecker : MonoBehaviour
                 break;
             }
         }
-        for(int i = 0; i < SaveManager.instance.tempGameData.perfectSwordsEquipped.Count; i++)
+        for(int i = 0; i < tempGameData.perfectSwordsEquipped.Count; i++)
         {
-            if(SaveManager.instance.tempGameData.perfectSwordsEquipped[i] == Inventory.Instance.GetItemIndexBySprite(ItemType.PerfectSword, perfectSwordSprite))
+            if(tempGameData.perfectSwordsEquipped[i] == Inventory.Instance.GetItemIndexBySprite(ItemType.PerfectSword, perfectSwordSprite))
             {
-                SaveManager.instance.tempGameData.perfectSwordsEquipped[i] = -1;
+                tempGameData.perfectSwordsEquipped[i] = -1;
                 break;
             }
         }
@@ -409,12 +411,12 @@ public class PerfectSwordChecker : MonoBehaviour
         swordPieceUI.currentSelectPerfectSwordEquipped.gameObject.SetActive(true);
         swordPieceUI.ChangeNumOfEquippedItem(true);
         int swordID = Inventory.Instance.GetItemIndexBySprite(ItemType.PerfectSword, perfectSwordImage.sprite);
-        SaveManager.instance.tempGameData.perfectSwordsHad.Remove(swordID);
+        tempGameData.perfectSwordsHad.Remove(swordID);
         for (int i=0; i < swordPieceUI.bigSlot.Count; i++)
         {
             if (swordPieceUI.bigSlot[i].Find("SelectBigSlot"))
             {
-                SaveManager.instance.tempGameData.perfectSwordsEquipped[i] = swordID;
+                tempGameData.perfectSwordsEquipped[i] = swordID;
                 CheckAndActivePair(i, false);
                 break;
             }
@@ -426,7 +428,7 @@ public class PerfectSwordChecker : MonoBehaviour
         bool canActivePair = false;
         int pairIndex = 0;
         int index2 = index + 1;
-        List<int> equippedSwords = SaveManager.instance.tempGameData.perfectSwordsEquipped;
+        List<int> equippedSwords = tempGameData.perfectSwordsEquipped;
         if(index == 0 || index % 2 == 0)
         {
             foreach (KeyValuePair<int, int> pair in swordPairsIndex)
@@ -497,13 +499,13 @@ public class PerfectSwordChecker : MonoBehaviour
                     activatedSwordPairNoti.SetSword2Infor(sword);
             }
         }
-        List<int> equippedSwords = SaveManager.instance.tempGameData.perfectSwordsEquipped;
+        List<int> equippedSwords = tempGameData.perfectSwordsEquipped;
         int pairIndex = GetPairIndexByOneSwordIndex(equippedSwords[index]);
         if (!onLoadScene)
             activatedSwordPairNoti.SetPairIndex(pairIndex);
-        if (SaveManager.instance.tempGameData.swordPairsActivated.Contains(pairIndex))
+        if (tempGameData.swordPairsActivated.Contains(pairIndex))
             return;
-        SaveManager.instance.tempGameData.swordPairsActivated.Add(pairIndex);
+        tempGameData.swordPairsActivated.Add(pairIndex);
         Player.Instance.playerStatsWithItems.ActivateSwordPair(pairIndex);
     }
     private void DeactiveEffectOnUIAndPlayerStats(int index, int index2)
@@ -524,9 +526,9 @@ public class PerfectSwordChecker : MonoBehaviour
         //        swordPieceUI.SetSwordFunctionTMPOnActivePairEffect(sword.function);
         //    }
         //}
-        List<int> equippedSwords = SaveManager.instance.tempGameData.perfectSwordsEquipped;
+        List<int> equippedSwords = tempGameData.perfectSwordsEquipped;
         int pairIndex = GetPairIndexByOneSwordIndex(equippedSwords[index]);
-        SaveManager.instance.tempGameData.swordPairsActivated.Remove(pairIndex);
+        tempGameData.swordPairsActivated.Remove(pairIndex);
         Player.Instance.playerStatsWithItems.DeactivateSwordPair(pairIndex);
     }
     private void DeactivePair(int index)
@@ -537,7 +539,7 @@ public class PerfectSwordChecker : MonoBehaviour
             DeactiveEffectOnUIAndPlayerStats(index, index+1);
         else
             DeactiveEffectOnUIAndPlayerStats(index, index - 1);
-        List<int> equippedSwords = SaveManager.instance.tempGameData.perfectSwordsEquipped;
+        List<int> equippedSwords = tempGameData.perfectSwordsEquipped;
         StartCoroutine(DeactivatePair(GetPairIndexByOneSwordIndex(equippedSwords[index])));
     }
     private void SetPairPosition(int index, int pairIndex)

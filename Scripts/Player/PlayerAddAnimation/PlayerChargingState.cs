@@ -25,16 +25,16 @@ public class PlayerChargingState : PlayerStates
     public override void Update()
     {
         base.Update();
-        rb.velocity = Vector3.zero;
-    }
-    protected override void ChangeStateByInput()
-    {
-        base.ChangeStateByInput();
+        rb.linearVelocity = Vector3.zero;
         if(stateDuration < 0 && flashFxCorou == null)
         {
             flashFxCorou = player.StartCoroutine(player.GetComponent<EntityFx>().FlashFX());
             PlayerEffectSpawner.instance.Spawn(PlayerEffectSpawner.instance.strongGroundedEffect, player.centerEffectPos.position, Quaternion.identity);
         }
+    }
+    protected override void ChangeStateByInput()
+    {
+        base.ChangeStateByInput();
         if (!InputManager.Instance.holdingAttackBtn && !Input.GetKey(KeyCode.K))
         {
             if(stateDuration > 0) 

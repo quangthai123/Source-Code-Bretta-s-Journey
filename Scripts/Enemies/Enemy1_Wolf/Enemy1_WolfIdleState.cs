@@ -21,7 +21,7 @@ public class Enemy1_WolfIdleState : EnemyStates
         {
             stateDuration = enemy.attackCooldown;
         }
-        rb.velocity = new Vector2(0f, rb.velocity.y);
+        rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
     }
     public override void Exit()
     {
@@ -30,7 +30,7 @@ public class Enemy1_WolfIdleState : EnemyStates
     public override void Update()
     {
         base.Update();
-        rb.velocity = new Vector2(0f, rb.velocity.y);
+        rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
         if (stateDuration < 0f)
         {
             if(!enemy.CanAttackPlayer())

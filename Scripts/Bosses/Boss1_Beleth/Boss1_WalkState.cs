@@ -23,7 +23,7 @@ public class Boss1_WalkState : EnemyStates
         base.Update();
         FlipToFacePlayer();
         if (!enemy.CheckOpponentInAttackRange())
-            rb.velocity = new Vector2(enemy.moveSpeed * enemy.facingDir, 0f);
+            rb.linearVelocity = new Vector2(enemy.moveSpeed * enemy.facingDir, 0f);
         else
             stateMachine.ChangeState(enemy.attack1State);
     }

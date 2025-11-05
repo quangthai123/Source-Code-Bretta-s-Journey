@@ -12,7 +12,7 @@ public class PlayerLedgeGrabState : PlayerStates
     {
         base.Start();
         rb.gravityScale = 0f;
-        rb.velocity = Vector3.zero;
+        rb.linearVelocity = Vector3.zero;
         player.normalCol.SetActive(false);
     }
 
@@ -24,7 +24,7 @@ public class PlayerLedgeGrabState : PlayerStates
     public override void Update()
     {
         base.Update();
-        rb.velocity = Vector3.zero;
+        rb.linearVelocity = Vector3.zero;
     }
 
     protected override void ChangeStateByInput()

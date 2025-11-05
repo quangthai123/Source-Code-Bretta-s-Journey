@@ -8,13 +8,13 @@ public class ImportantItemUI : InventoryLogic
 {
     public static ImportantItemUI Instance;
     private bool isUpdating = false; // for upgrade player stats on this UI 
-    protected override void Awake()
+    protected void Awake()
     {
-        base.Awake();
         if (Instance != null)
             Destroy(gameObject);
         else
             Instance = this;
+        OnMoveSlotSelector += GetItemIndexByImage;
     }
     protected override void LoadData()
     {
@@ -63,15 +63,16 @@ public class ImportantItemUI : InventoryLogic
         {
             selectedItemImage.gameObject.SetActive(false);
             itemInforUI.SetActive(false);
-            selectImage.SetActive(true);
-            selectImage.transform.position = new Vector2(image.transform.position.x, image.transform.position.y + selectImageOffSetYWithHadItem);
-            selectImage.transform.localScale = new Vector2(3.67f, 3.65f);
+            selectedItemLoreTxt.text = "";
+            selector.SetActive(true);
+            selector.transform.position = new Vector2(image.transform.position.x, image.transform.position.y + selectImageOffSetYWithHadItem);
+            selector.transform.localScale = new Vector2(3.67f, 3.65f);
             return;
         }
         Debug.Log("Click important!");
-        selectImage.SetActive(true);
-        selectImage.transform.position = new Vector2(image.transform.position.x, image.transform.position.y + selectImageOffSetYWithHadItem);
-        selectImage.transform.localScale = new Vector2(3.67f, 3.65f);
+        selector.SetActive(true);
+        selector.transform.position = new Vector2(image.transform.position.x, image.transform.position.y + selectImageOffSetYWithHadItem);
+        selector.transform.localScale = new Vector2(3.67f, 3.65f);
         foreach (Item item in Inventory.Instance.allImportantItemsList)
         {
             if (image.sprite == item.itemImage.sprite)
@@ -79,13 +80,16 @@ public class ImportantItemUI : InventoryLogic
                 selectedItemImage.sprite = item.itemImage.sprite;
                 selectedItemName.text = item.itemName;
                 selectedItemDescription.text = item.itemDescription;
-                selectedItemLore.text = item.itemLore;
+                selectedItemLoreTxt.text = item.itemLore;
+                selectedLore = item.itemLore;
                 break;
             }
         }
         selectedItemImage.gameObject.SetActive(true);
         itemInforUI.SetActive(true);
         RemoveNewSign(itemHadImage.IndexOf(image), false);
+
+        StartCoroutine(scrollViewHandler.ResetScrollView());
     }
     private void RemoveNewSign(int _indexToRemove, bool _isUpdating)
     {
@@ -124,9 +128,9 @@ public class ImportantItemUI : InventoryLogic
 
     private int GetIndexOnUIByItemIndex(int _itemIndex)
     {
-        for(int i=0; i<Inventory.Instance.importantHadItems.Count; i++)
+        for(int i=0; i<tempGameData.importantHadItems.Count; i++)
         {
-            if (Inventory.Instance.importantHadItems[i] == _itemIndex)
+            if (tempGameData.importantHadItems[i] == _itemIndex)
                 return i;
         }
         return -1;
@@ -135,6 +139,6 @@ public class ImportantItemUI : InventoryLogic
     {
         itemInforUI.SetActive(false);
         selectedItemImage.gameObject.SetActive(false);
-        selectImage.SetActive(false);
+        selector.SetActive(false);
     }
 }

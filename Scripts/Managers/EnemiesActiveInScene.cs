@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,21 +6,15 @@ using UnityEngine;
 public class EnemiesActiveInScene : MonoBehaviour
 {
     public static EnemiesActiveInScene instance;
-    public bool[,] enabledEnemyList = new bool[300, 30];
+    public bool[,] enemiesInAllScene = new bool[300, 30];
     void Awake()
     {
-        if(instance != null)
+        if (instance != null)
             Destroy(this.gameObject);
         else
             instance = this;
-        for(int i=0; i<300; i++)
-        {
-            for (int j=0; j<30; j++)
-            {
-                enabledEnemyList[i, j] = true;
-            }
-        }
         DontDestroyOnLoad(gameObject);
+        ReviveAllEnemy();
     }
     public void ReviveAllEnemy()
     {
@@ -27,15 +22,13 @@ public class EnemiesActiveInScene : MonoBehaviour
         {
             for (int j = 0; j < 30; j++)
             {
-                enabledEnemyList[i, j] = true;
+                enemiesInAllScene[i, j] = true;
             }
         }
     }
-    public void SaveEnemiesQuantityBeforeChangeScene(int _sceneIndex, bool[] _arr)
+    public void SaveDeadEnemy(int _sceneIndex, int enemyIndex)
     {
-        for(int i = 0; i < 30; i++)
-        {
-            enabledEnemyList[_sceneIndex, i] = _arr[i];
-        }
+        enemiesInAllScene[_sceneIndex, enemyIndex] = false;
     }
 }
+

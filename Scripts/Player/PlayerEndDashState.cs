@@ -10,7 +10,7 @@ public class PlayerEndDashState : PlayerStates
     public override void Start()
     {
         base.Start();
-        rb.velocity = Vector3.zero;
+        rb.linearVelocity = Vector3.zero;
         if (player.playerStatsWithItems.CheckEquippedArmorial(5)) // Check have equipped speed up armorial 
         {
             player.anim.speed = 1.25f;
@@ -30,25 +30,25 @@ public class PlayerEndDashState : PlayerStates
         if (InputManager.Instance.moveDir.x == 0)
         {
             if ((!player.CheckSlope() || player.CheckGetOutSlope()) && (player.stateMachine.currentState == player.jumpState || player.facingDir == -1))
-                rb.velocity = new Vector2(player.moveSpeed * horizontalInput, rb.velocity.y);
+                rb.linearVelocity = new Vector2(player.moveSpeed * horizontalInput, rb.linearVelocity.y);
             else if (!player.CheckSlope() || player.CheckGetOutSlope() && (player.stateMachine.currentState != player.jumpState || player.facingDir == 1))
-                rb.velocity = new Vector2(player.moveSpeed * horizontalInput, 0f);
+                rb.linearVelocity = new Vector2(player.moveSpeed * horizontalInput, 0f);
             else
             {
                 if (player.CheckJumpOnSlope() && player.stateMachine.currentState != player.jumpState)
-                    rb.velocity = new Vector2(player.moveSpeed * horizontalInput * -player.slopeMoveDir.x, player.moveSpeed * horizontalInput * -player.slopeMoveDir.y);
+                    rb.linearVelocity = new Vector2(player.moveSpeed * horizontalInput * -player.slopeMoveDir.x, player.moveSpeed * horizontalInput * -player.slopeMoveDir.y);
             }
         }
         else
         {
             if ((!player.CheckSlope() || player.CheckGetOutSlope()) && (player.stateMachine.currentState == player.jumpState || player.facingDir == -1))
-                rb.velocity = new Vector2(player.moveSpeed * InputManager.Instance.moveDir.x, rb.velocity.y);
+                rb.linearVelocity = new Vector2(player.moveSpeed * InputManager.Instance.moveDir.x, rb.linearVelocity.y);
             else if ((!player.CheckSlope() || player.CheckGetOutSlope()) && (player.stateMachine.currentState != player.jumpState || player.facingDir == 1))
-                rb.velocity = new Vector2(player.moveSpeed * InputManager.Instance.moveDir.x, 0f);
+                rb.linearVelocity = new Vector2(player.moveSpeed * InputManager.Instance.moveDir.x, 0f);
             else
             {
                 if (player.CheckJumpOnSlope() && player.stateMachine.currentState != player.jumpState)
-                    rb.velocity = new Vector2(player.moveSpeed * InputManager.Instance.moveDir.x * -player.slopeMoveDir.x, player.moveSpeed * InputManager.Instance.moveDir.x * -player.slopeMoveDir.y);
+                    rb.linearVelocity = new Vector2(player.moveSpeed * InputManager.Instance.moveDir.x * -player.slopeMoveDir.x, player.moveSpeed * InputManager.Instance.moveDir.x * -player.slopeMoveDir.y);
             }
         }
         if (player.CheckCeilling()) 

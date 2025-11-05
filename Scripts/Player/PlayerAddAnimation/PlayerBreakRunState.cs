@@ -4,12 +4,14 @@ using UnityEngine;
 
 public class PlayerBreakRunState : PlayerOnGroundState
 {
+    private int preFacingDir;
     public PlayerBreakRunState(Player _player, PlayerStateMachine _stateMachine, string _animBoolName) : base(_player, _stateMachine, _animBoolName)
     {
     }
     public override void Start()
     {
         base.Start();
+        preFacingDir = player.facingDir;
     }
     public override void Exit()
     {
@@ -18,9 +20,14 @@ public class PlayerBreakRunState : PlayerOnGroundState
     public override void Update()
     {
         base.Update();
-        rb.velocity = Vector2.zero;
+        if (stateMachine.currentState != player.jumpState)
+            rb.linearVelocity = Vector2.zero;
         if (finishAnim)
             stateMachine.ChangeState(player.idleState);
+        if (preFacingDir != player.facingDir)
+        {
+            stateMachine.ChangeState(player.turnRunState);
+        }
     }
     protected override void ChangeStateByInput()
     {

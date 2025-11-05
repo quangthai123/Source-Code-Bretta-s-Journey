@@ -14,7 +14,7 @@ public class Enemy1_WolfHurtState : EnemyStates
     public override void Start()
     {
         base.Start();
-        rb.velocity = Vector3.zero;
+        rb.linearVelocity = Vector3.zero;
         Debug.Log("Counter Attacked!!!");
     }
     public override void Exit()
@@ -27,7 +27,7 @@ public class Enemy1_WolfHurtState : EnemyStates
     public override void Update()
     {
         base.Update();
-        rb.velocity = Vector3.zero;
+        rb.linearVelocity = Vector3.zero;
         if (finishAnim)
             stateMachine.ChangeState(enemy.idleState);
     }

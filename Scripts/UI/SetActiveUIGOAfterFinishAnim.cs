@@ -15,7 +15,7 @@ public class SetActiveUIGOAfterFinishAnim : MonoBehaviour
         if(SceneScenarioSelectLv.instance != null && !SceneScenarioSelectLv.instance.isScenario && gameObject.name == "PlaceUI")
         {
             SceneScenarioSelectLv.instance.FinishScenarioSelectLv();
-            CheckPoint.instance.SaveGameByCheckPoint();
+            //CheckPoint.instance.SaveGameByCheckPoint();
         }
     }
 }

@@ -1,12 +1,11 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerJumpState : PlayerAirState
-{
-    //private float jumpHigherDuration = .08f;
-    //private float jumpHigherTimer = .08f;
-    //private bool endJump = false;
+{     
+    private bool isJumping = false;
+    private float jumpTimeCounter;
     public PlayerJumpState(Player _player, PlayerStateMachine _stateMachine, string _animBoolName) : base(_player, _stateMachine, _animBoolName)
     {
     }
@@ -14,10 +13,11 @@ public class PlayerJumpState : PlayerAirState
     {
         base.Start();
         AudioManager.instance.PlaySFX(1);
-        //endJump = false;
-        //jumpHigherTimer = jumpHigherDuration;
-        rb.velocity = new Vector2(rb.velocity.x, player.jumpForce);
-        stateDuration = player.jumpDuration;
+
+        isJumping = true;
+        jumpTimeCounter = player.maxHoldJumpTime;
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, player.jumpForce);
+
         if (!player.canLadder && player.CheckGrounded())
             PlayerEffectSpawner.instance.Spawn("startJumpFx", player.centerEffectPos.position, Quaternion.identity);
     }
@@ -29,19 +29,30 @@ public class PlayerJumpState : PlayerAirState
     public override void Update()
     {
         base.Update();
-        if ((InputManager.Instance.moveDir.x == 0))
+        // Giữ để tiếp tục nhảy
+        if (Input.GetKey(KeyCode.Space) && isJumping)
         {
-            rb.velocity = new Vector2(horizontalInput * player.moveSpeed, rb.velocity.y);
-        }
-        else
+            if (jumpTimeCounter > 0)
+            {
+                rb.linearVelocity = new Vector2(horizontalInput * player.moveSpeed, rb.linearVelocity.y + player.holdJumpForce * Time.deltaTime);
+                jumpTimeCounter -= Time.deltaTime;
+            }
+            else
+            {
+                isJumping = false;
+            }
+        } else
+            rb.linearVelocity = new Vector2(horizontalInput * player.moveSpeed, rb.linearVelocity.y);
+        // Nhả phím thì dừng nhảy sớm
+        if (Input.GetKeyUp(KeyCode.Space))
         {
-            rb.velocity = new Vector2(InputManager.Instance.moveDir.x* player.moveSpeed, rb.velocity.y);
+            isJumping = false;
         }
-        if (stateDuration < 0 && rb.velocity.y < -.1f && !Input.GetKeyDown(KeyCode.Space) && !InputManager.Instance.jumped && !InputManager.Instance.dashed && !Input.GetKeyDown(KeyCode.LeftShift))
+        if (rb.linearVelocity.y < -.1f && !Input.GetKeyDown(KeyCode.Space) && !InputManager.Instance.jumped && !InputManager.Instance.dashed && !Input.GetKeyDown(KeyCode.LeftShift))
         {
             stateMachine.ChangeState(player.fallState);
         }
-        if (player.CheckGrounded() && !player.CheckSlope() && rb.velocity.y < .1f)
+        if (player.CheckGrounded() && !player.CheckSlope() && rb.linearVelocity.y < 0.1f)
             stateMachine.ChangeState(player.lightGroundedState);
     }
     public override void FixedUpdate()
@@ -79,7 +90,8 @@ public class PlayerJumpState : PlayerAirState
         base.ChangeStateByInput();
         if ((Input.GetKeyDown(KeyCode.LeftShift) || InputManager.Instance.dashed) && !player.airDashState.airDashed)
         {
-            stateMachine.ChangeState(player.airDashState);
+            if (player.TempGameData.GainedAbilities[1])
+                stateMachine.ChangeState(player.airDashState);
         }
     }
 }

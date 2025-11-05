@@ -25,7 +25,7 @@ public class EnemyCSkeleton_WalkState : EnemyStates
     public override void Update()
     {
         base.Update();
-        rb.velocity = new Vector2(enemy.moveSpeed * enemy.facingDir, 0f);
+        rb.linearVelocity = new Vector2(enemy.moveSpeed * enemy.facingDir, 0f);
         if (enemy.DetectedPlayer())
         {
             if (enemy.DetectedPlayer() && Vector2.Distance(enemy.transform.position, player.transform.position) >= 2f)
@@ -34,7 +34,7 @@ public class EnemyCSkeleton_WalkState : EnemyStates
             }
             if (enemy.CheckOpponentInAttackRange())
             {
-                rb.velocity = Vector2.zero;
+                rb.linearVelocity = Vector2.zero;
                 stateMachine.ChangeState(enemy.attackState);
             }
         }
@@ -42,7 +42,7 @@ public class EnemyCSkeleton_WalkState : EnemyStates
         {
             if (enemy.CheckNotFrontGround() || enemy.CheckWalled())
             {
-                rb.velocity = Vector2.zero;
+                rb.linearVelocity = Vector2.zero;
                 enemy.Flip();
             }
             if (stateDuration < 0f)

@@ -12,7 +12,7 @@ public class PlayerKnockoutState : PlayerStates
     public override void Start()
     {
         base.Start();
-        rb.velocity = Vector2.zero;
+        rb.linearVelocity = Vector2.zero;
         stateDuration = player.knockOutDuration;
         player.anim.ResetTrigger("GetUp");
         //startCalled = true;
@@ -30,7 +30,7 @@ public class PlayerKnockoutState : PlayerStates
         base.Update();
         //if (!startCalled)
         //    return;
-        rb.velocity = Vector2.zero;
+        rb.linearVelocity = Vector2.zero;
         if (stateDuration < 0f)
             player.anim.SetTrigger("GetUp");
         if (finishAnim)

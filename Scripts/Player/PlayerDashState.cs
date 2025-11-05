@@ -22,7 +22,7 @@ public class PlayerDashState : PlayerStates
         if (!player.CheckSlope())
             startDashFx = PlayerEffectSpawner.instance.Spawn("endDashFx", player.leftEffectPos.position, Quaternion.identity);
         player.isKnocked = true;
-        player.StartSpawnDashShadowFx(player.spawnDashShadowCooldown);
+        player.StartSpawnDashShadowFxDelay();
     }
     public override void Exit()
     {
@@ -31,6 +31,7 @@ public class PlayerDashState : PlayerStates
         player.dashCol.SetActive(false);
         player.isKnocked = false;
         player.dashTimer = Time.time;
+        player.CancelInvokeSpawnDashFxDelay();
         player.StopSpawnDashShadowFx();
     }
     public override void Update()
@@ -44,7 +45,7 @@ public class PlayerDashState : PlayerStates
         rb.sharedMaterial = player.normalPhysicMat;
         if (!player.CheckGrounded() && !player.CheckGetOutSlope())
         {
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
             stateMachine.ChangeState(player.fallState);
         }
         if(stateDuration <= 0f)
@@ -61,23 +62,23 @@ public class PlayerDashState : PlayerStates
         if(stateDuration > 0f)
         {
             if (player.CheckGetOutSlope() && player.facingDir == 1)
-                rb.velocity = new Vector2(player.dashSpeed * player.facingDir, 0f);
+                rb.linearVelocity = new Vector2(player.dashSpeed * player.facingDir, 0f);
             else if(player.CheckSlope() && stateMachine.currentState != player.jumpState)
-                rb.velocity = new Vector2(player.dashSpeed * player.facingDir * -player.slopeMoveDir.x, player.dashSpeed * player.facingDir * -player.slopeMoveDir.y);
+                rb.linearVelocity = new Vector2(player.dashSpeed * player.facingDir * -player.slopeMoveDir.x, player.dashSpeed * player.facingDir * -player.slopeMoveDir.y);
             else
-                rb.velocity = new Vector2(player.dashSpeed * player.facingDir, rb.velocity.y);
+                rb.linearVelocity = new Vector2(player.dashSpeed * player.facingDir, rb.linearVelocity.y);
         }
     }
     protected override void ChangeStateByInput()
     {
         base.ChangeStateByInput();
-        if (Input.GetKeyDown(KeyCode.Space) || InputManager.Instance.jumped)
+        if ((Input.GetKeyDown(KeyCode.Space) || InputManager.Instance.jumped) && !player.CheckFrontAndBackCeilling())
             stateMachine.ChangeState(player.jumpState);
-        if(Input.GetKeyDown(KeyCode.J) || InputManager.Instance.parried)
+        if((Input.GetKeyDown(KeyCode.J) || InputManager.Instance.parried) && !player.CheckFrontAndBackCeilling())
             stateMachine.ChangeState(player.shieldState);
         if (InputManager.Instance.CheckCanDashAtk() && SaveManager.instance.tempGameData.learnedSkill[7])
             stateMachine.ChangeState(player.dashAttackState);
-        else if(InputManager.Instance.getAttackedBtnUp)
+        else if(InputManager.Instance.getAttackedBtnUp && !player.CheckFrontAndBackCeilling())
             stateMachine.ChangeState(player.attackState);
         //stateMachine.ChangeState(player.attackState);
     }

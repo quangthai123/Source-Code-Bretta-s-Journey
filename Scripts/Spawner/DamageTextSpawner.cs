@@ -13,6 +13,7 @@ public class DamageTextSpawner : Spawner
             Destroy(gameObject);
         else
             Instance = this;
+        DontDestroyOnLoad(gameObject);
     }
     public override Transform Spawn(string name, Vector2 pos, Quaternion rot)
     {

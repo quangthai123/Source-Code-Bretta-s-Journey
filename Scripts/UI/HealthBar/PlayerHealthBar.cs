@@ -15,6 +15,7 @@ public class PlayerHealthBar : MonoBehaviour
         easeBar.maxValue = playerStats.maxHealth.GetValue();
         healthBar.value = playerStats.currentHealth;
         easeBar.value = healthBar.value;
+        Debug.Log("PlayerHealthBar initialized.");
     }
 
     // Update is called once per frame

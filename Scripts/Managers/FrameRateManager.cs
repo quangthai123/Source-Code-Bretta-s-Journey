@@ -5,16 +5,22 @@ using UnityEngine;
 
 public class FrameRateManager : MonoBehaviour
 {
+    public static FrameRateManager Instance { get; private set; }
     const int maxRate = 9999;
     public float targetFrameRate = 60f;
     private float currentFrameTime;
     void Awake()
     {
+        if (Instance != null)
+            Destroy(gameObject);
+        else
+            Instance = this;
         //Application.targetFrameRate = 10;
-        QualitySettings.vSyncCount = 0;
+        //QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = maxRate;
-        currentFrameTime = Time.realtimeSinceStartup;
-        StartCoroutine("WaitForNextFrame");
+        DontDestroyOnLoad(gameObject);
+        //currentFrameTime = Time.realtimeSinceStartup;
+        //StartCoroutine("WaitForNextFrame");
     }
     private IEnumerator WaitForNextFrame()
     {

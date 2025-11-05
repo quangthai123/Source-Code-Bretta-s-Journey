@@ -36,11 +36,11 @@ public class PlayerIdleState : PlayerOnGroundState
         if(InputManager.Instance.moveDir.x == 0) 
         {
             if (!player.CheckSlope() && player.stateMachine.currentState != player.jumpState)
-                rb.velocity = Vector2.zero;
+                rb.linearVelocity = Vector2.zero;
         } else 
         {
             if (!player.CheckSlope() && player.stateMachine.currentState != player.jumpState)
-                rb.velocity = Vector2.zero;
+                rb.linearVelocity = Vector2.zero;
         }
     }
     protected override void ChangeStateByInput()

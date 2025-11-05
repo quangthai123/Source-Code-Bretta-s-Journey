@@ -28,7 +28,7 @@ public class Boss1_GroundedState : EnemyStates
         base.Update();
         groundedFx.position = enemy.spawnGroundedFxPos.position;
         FlipToFacePlayer();
-        rb.velocity = new Vector2(0f, rb.velocity.y);
+        rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
         if (finishAnim)
             stateMachine.ChangeState(enemy.attack2State);
     }

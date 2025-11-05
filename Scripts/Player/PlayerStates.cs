@@ -83,7 +83,7 @@ public class PlayerStates
     }
     protected virtual void ChangeStateByInput()
     {
-
+        
     }
     protected void MakeEnableNormalCol(bool _enabled)
     {

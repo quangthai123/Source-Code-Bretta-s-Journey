@@ -27,15 +27,14 @@ public class LevelPortal : MonoBehaviour
         if(canEnterLv && InputManager.Instance.moveDir.y == -1)
         {
             canEnterLv = false;
-            LoadingScene.instance.gameObject.SetActive(true);
-            LoadingScene.instance.FadeIn();
+            LoadingScene.instance.StartFadeIn(1 / 6f, false);
             Debug.LogWarning("Load!!!");
-            EnemiesManager.Instance.CheckEnemyDied();
             tempGameData.currentSwordLv = Player.Instance.playerStats.swordLv;
             tempGameData.initializePos = nextSceneInitializePos;
             tempGameData.facingDir = nextFacingDir;
             tempGameData.tempCurrentScene = nextSceneName;
-            Invoke("LoadScene", .5f);
+            SceneManager.LoadSceneAsync(nextSceneName);
+            //Invoke("LoadScene", .5f);
         }
     }
     private void LoadScene()

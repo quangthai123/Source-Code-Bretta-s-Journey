@@ -1,12 +1,11 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerDoubleJumpState : PlayerStates
 {
-    //private float jumpHigherDuration = .08f;
-    //private float jumpHigherTimer = .08f;
-    //private bool endJump = false;
+    private bool isJumping = false;
+    private float jumpTimeCounter;
     public PlayerDoubleJumpState(Player _player, PlayerStateMachine _stateMachine, string _animBoolName) : base(_player, _stateMachine, _animBoolName)
     {
     }
@@ -15,13 +14,13 @@ public class PlayerDoubleJumpState : PlayerStates
     {
         base.Start();
         player.canGrabLedge = true;
-        stateDuration = player.jumpDuration;
-        rb.velocity = new Vector2(rb.velocity.x, player.jumpForce);
-        //endJump = false;
-        //jumpHigherTimer = jumpHigherDuration;
+
+        isJumping = true;
+        jumpTimeCounter = player.maxHoldJumpTime;
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, player.jumpForce);
+
         AudioManager.instance.PlaySFX(1);
-        if (!player.canLadder)
-            PlayerEffectSpawner.instance.Spawn("doubleJumpFx", player.centerEffectPos.position, Quaternion.identity);
+        PlayerEffectSpawner.instance.Spawn("doubleJumpFx", player.centerEffectPos.position, Quaternion.identity);
     }
     public override void Exit()
     {
@@ -30,25 +29,32 @@ public class PlayerDoubleJumpState : PlayerStates
     public override void Update()
     {
         base.Update();
-        if ((InputManager.Instance.moveDir.x == 0))
+        // Giữ để tiếp tục nhảy
+        if (Input.GetKey(KeyCode.Space) && isJumping)
         {
-            //if (stateDuration > 0)
-            //    rb.velocity = new Vector2(horizontalInput * player.moveSpeed, player.jumpForce);
-            //else
-                rb.velocity = new Vector2(horizontalInput * player.moveSpeed, rb.velocity.y);
+            if (jumpTimeCounter > 0)
+            {
+                rb.linearVelocity = new Vector2(horizontalInput * player.moveSpeed, rb.linearVelocity.y + player.holdJumpForce * Time.deltaTime);
+                jumpTimeCounter -= Time.deltaTime;
+            }
+            else
+            {
+                isJumping = false;
+            }
         }
         else
+            rb.linearVelocity = new Vector2(horizontalInput * player.moveSpeed, rb.linearVelocity.y);
+
+        // Nhả phím thì dừng nhảy sớm
+        if (Input.GetKeyUp(KeyCode.Space))
         {
-            //if (stateDuration > 0)
-            //    rb.velocity = new Vector2(InputManager.Instance.moveDir.x * player.moveSpeed, player.jumpForce);
-            //else
-                rb.velocity = new Vector2(InputManager.Instance.moveDir.x * player.moveSpeed, rb.velocity.y);
+            isJumping = false;
         }
-        if (stateDuration < 0 && rb.velocity.y < -.1f && !InputManager.Instance.dashed && !Input.GetKeyDown(KeyCode.LeftShift))
+        if (stateDuration < 0 && rb.linearVelocity.y < -.1f && !InputManager.Instance.dashed && !Input.GetKeyDown(KeyCode.LeftShift))
         {
             stateMachine.ChangeState(player.fallState);
         }
-        if (player.CheckGrounded() && !player.CheckSlope() && rb.velocity.y < .1f)
+        if (player.CheckGrounded() && !player.CheckSlope() && rb.linearVelocity.y < .1f)
             stateMachine.ChangeState(player.lightGroundedState);
     }
 
@@ -74,7 +80,10 @@ public class PlayerDoubleJumpState : PlayerStates
         if (Input.GetKeyDown(KeyCode.K) || InputManager.Instance.attacked)
             stateMachine.ChangeState(player.attackState);
         if ((Input.GetKeyDown(KeyCode.LeftShift) || InputManager.Instance.dashed) && !player.airDashState.airDashed)
-            stateMachine.ChangeState(player.airDashState);
+        {
+            if (player.TempGameData.GainedAbilities[1])
+                stateMachine.ChangeState(player.airDashState);
+        }
         if (player.CheckWalled() && !player.CheckGrounded() && (Input.GetKeyDown(KeyCode.K) || InputManager.Instance.attacked))
             stateMachine.ChangeState(player.wallSlideState);
         if ((Input.GetKeyDown(KeyCode.Q) || InputManager.Instance.usedSkill) && SaveManager.instance.tempGameData.magicGemEquippedItems != null)

@@ -42,4 +42,6 @@ public class SkillUIController : MonoBehaviour
 
         //swordSkillPreview.StopPreview();
     }
+    public void ShowNewSignOnMagicTab() => magicSkillUITab.Find("New Sign Image").gameObject.SetActive(true);
+    public void DisableNewSignOnMagicTab() => magicSkillUITab.Find("New Sign Image").gameObject.SetActive(false);
 }

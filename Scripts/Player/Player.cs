@@ -1,3 +1,4 @@
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -44,13 +45,20 @@ public class Player : Entity
     public PlayerBreakRunState breakRunState { get; private set; }
     public PlayerLightGroundedState lightGroundedState { get; private set; }
     public PlayerExitParryState exitParryState { get; private set; }
-    public PlayerLadderOutState ladderOutState { get; private set; }    
+    public PlayerLadderOutState ladderOutState { get; private set; }
     public PlayerLaddderInState laddderInState { get; private set; }
     public PlayerToLedgeGrabState toLedgeGrabState { get; private set; }
     public PlayerChargingState chargingState { get; private set; }
     public PlayerChargedAttackState chargedAttackState { get; private set; }
     public PlayerDashAttackState dashAttackState { get; private set; }
     public PlayerMagicSkill1State magicSkill1State { get; private set; }
+    public PlayerInteractNpcState interactNpcState { get; private set; }
+    public PlayerRestState restState { get; private set; }
+    public PlayerTurnRunState turnRunState { get; private set; }
+    public PlayerEnterLadderState enterLadderState { get; private set; }
+    public PlayerSlideDownState slideDownState { get; private set; }
+    public PlayerEnterLadder1State enterLadder1State { get; private set; }
+    public PlayerJumpLadderState jumpLadderState { get; private set; }
     #endregion
     [SerializeField] protected Transform groundCheckPos1;
     [SerializeField] protected Transform groundCheckPos2;
@@ -68,9 +76,9 @@ public class Player : Entity
     public bool cantBeHurtWhileHealing = false;
     [Space]
     [Header("Jump Infor")]
-    public float jumpDuration;
     public float jumpForce;
-    public float jumpMinTime;
+    public float holdJumpForce = 0.2f;       // lực giữ khi còn nhấn
+    public float maxHoldJumpTime = 0.3f;     // thời gian tối đa giữ nhảy
     [Header("Wall Jump Infor")]
     public Vector2 wallJumpForce;
     public GameObject wallSlideCol;
@@ -150,6 +158,7 @@ public class Player : Entity
     public float spawnParryEffectCooldown;
     [HideInInspector] public PlayerStats playerStats;
     [HideInInspector] public PlayerStatsWithItems playerStatsWithItems;
+    public GameDatas TempGameData { get; private set; }
     public Transform playerSoul;
     public Transform playerFakeSoul;
 
@@ -160,6 +169,11 @@ public class Player : Entity
 
     public bool checkStandOnLedge = false;
     public Vector2 spawnSoulPos;
+    public float LadderPosX;
+    public float LadderBottomPosY;
+    public float LadderInOffsetY;
+    [HideInInspector] public Transform InteractingLadder;
+    public bool CanControl { get; private set; } = true;
     protected override void Awake()
     {
         //Time.timeScale = .1f;
@@ -213,8 +227,21 @@ public class Player : Entity
         dashAttackState = new PlayerDashAttackState(this, stateMachine, "DashAttack");
         magicSkill1State = new PlayerMagicSkill1State(this, stateMachine, "Magic1");
 
+        interactNpcState = new PlayerInteractNpcState(this, stateMachine, "Run");
+        restState = new PlayerRestState(this, stateMachine, "Rest");
+
+        turnRunState = new PlayerTurnRunState(this, stateMachine, "TurnRun");
+
+        enterLadderState = new PlayerEnterLadderState(this, stateMachine, "EnterLadder");
+
+        slideDownState = new PlayerSlideDownState(this, stateMachine, "SlideDown");
+
+        enterLadder1State = new PlayerEnterLadder1State(this, stateMachine, "EnterLadder1");
+        jumpLadderState = new PlayerJumpLadderState(this, stateMachine, "JumpLadder");
+
         playerStats = GetComponent<PlayerStats>();
         playerStatsWithItems = GetComponent<PlayerStatsWithItems>();
+        TempGameData = Resources.Load<GameDatas>("TempGameData");
     }
 
     protected void Start()
@@ -263,10 +290,21 @@ public class Player : Entity
         startDashShadowCoroutine = true;
         dashShadowCoroutine = StartCoroutine(SpawnDashShadow(cd));
     }
+    public void StartSpawnDashShadowFxDelay() 
+    {
+        Invoke("SpawnDashShadowDelay", .05f);
+    }
+    public void CancelInvokeSpawnDashFxDelay() => CancelInvoke("SpawnDashShadowDelay");
+    private void SpawnDashShadowDelay()
+    {
+        startDashShadowCoroutine = true;
+        dashShadowCoroutine = StartCoroutine(SpawnDashShadow(spawnDashShadowCooldown));
+    }
     public void StopSpawnDashShadowFx()
     {
         startDashShadowCoroutine = false;
-        StopCoroutine(dashShadowCoroutine);
+        if(dashShadowCoroutine != null)
+            StopCoroutine(dashShadowCoroutine);
     }
     private void FixedUpdate()
     {
@@ -283,7 +321,10 @@ public class Player : Entity
         if (isKnocked) // for run after be hit
             return;
         if (!CheckGrounded())
-            base.FlipController();
+        {
+            if(stateMachine.currentState != enterLadderState)
+                base.FlipController();
+        }
         else
         {
             if (stateMachine.currentState == landingState)
@@ -319,9 +360,9 @@ public class Player : Entity
         if (!canGrabLedge || CheckLedgeGround())
             return false;
         Collider2D ledge = Physics2D.OverlapCircle(ledgeCheckPos.position, ledgeCheckRadius, whatIsGround);
-        if(ledge != null)
+        if (ledge != null)
         {
-            if(ledge.GetComponent<LedgeToGrab>() != null)
+            if (ledge.GetComponent<LedgeToGrab>() != null)
             {
                 Vector2 ledgePos = ledge.transform.position;
                 if (facingDir == 1)
@@ -340,6 +381,11 @@ public class Player : Entity
     {
         return Physics2D.Raycast(ceillingCheckPos1.position, Vector2.up, ceillingCheckDistance, whatIsGround) ||
             Physics2D.Raycast(ceillingCheckPos2.position, Vector2.up, ceillingCheckDistance, whatIsGround);
+    }
+    public bool CheckFrontAndBackCeilling()
+    {
+        return Physics2D.Raycast(new Vector2(ceillingCheckPos1.position.x - .457f * facingDir, ceillingCheckPos1.position.y), Vector2.up, ceillingCheckDistance *4f, whatIsGround) ||
+            Physics2D.Raycast(new Vector2(ceillingCheckPos2.position.x + .405f * facingDir, ceillingCheckPos2.position.y), Vector2.up, ceillingCheckDistance * 4f, whatIsGround);
     }
     public bool CheckSlope()
     {
@@ -397,9 +443,9 @@ public class Player : Entity
         Collider2D[] hits = Physics2D.OverlapCircleAll(attackPointPos.position, attackRangeRadius, opponentLayer);
         if (hits.Length <= 0)
             AudioManager.instance.PlaySFX(5);
-        else if(stateMachine.currentState != counterAttackState)
+        else if (stateMachine.currentState != counterAttackState)
         {
-            switch(attackWeight)
+            switch (attackWeight)
             {
                 case 0:
                     AudioManager.instance.PlaySFX(6);
@@ -477,22 +523,22 @@ public class Player : Entity
             switch (attackWeight)
             {
                 case 0:
-                    float rdX = Random.Range(-.1f, .1f);
-                    float rdY = Random.Range(-.1f, .1f);
+                    float rdX = UnityEngine.Random.Range(-.1f, .1f);
+                    float rdY = UnityEngine.Random.Range(-.1f, .1f);
                     GameManager.Instance.CreateScreenShakeFx(new Vector2(rdX, rdY)); break;
                 case 1:
-                    float rdX1 = Random.Range(-.2f, .2f);
-                    float rdY1 = Random.Range(-.2f, .2f);
+                    float rdX1 = UnityEngine.Random.Range(-.2f, .2f);
+                    float rdY1 = UnityEngine.Random.Range(-.2f, .2f);
                     GameManager.Instance.CreateScreenShakeFx(new Vector2(rdX1, rdY1)); break;
                 case 2:
-                    float rdX2 = Random.Range(-.4f, .4f);
-                    float rdY2 = Random.Range(-.4f, .4f);
+                    float rdX2 = UnityEngine.Random.Range(-.4f, .4f);
+                    float rdY2 = UnityEngine.Random.Range(-.4f, .4f);
                     GameManager.Instance.CreateScreenShakeFx(new Vector2(rdX2, rdY2)); break;
                 case 3:
                 case 4:
                 case 5:
-                    float rdX3 = Random.Range(-.5f, .5f);
-                    float rdY3 = Random.Range(-.5f, .5f);
+                    float rdX3 = UnityEngine.Random.Range(-.5f, .5f);
+                    float rdY3 = UnityEngine.Random.Range(-.5f, .5f);
                     GameManager.Instance.CreateScreenShakeFx(new Vector2(rdX3, rdY3)); break;
             }
 
@@ -533,12 +579,12 @@ public class Player : Entity
                 isStrongStrike = true;
             }
             if (CheckGroundedWhileHurtOrParry())
-                rb.velocity = new Vector2(currentKnockbackDir.x * -facingDir, currentKnockbackDir.y);
+                rb.linearVelocity = new Vector2(currentKnockbackDir.x * -facingDir, currentKnockbackDir.y);
             stateMachine.ChangeState(parryState);
             return;
         }
         entityFx.StartCoroutine("FlashFX");
-        if(!isDeathDamage)
+        if (!isDeathDamage)
             AudioManager.instance.PlaySFX(7);
         HitKnockback(opponentTransform, attackWeight);
         if (opponentTransform.GetComponentInParent<Enemy>() != null)
@@ -564,7 +610,7 @@ public class Player : Entity
             Invoke("EndCooldownHurt", 1f);
             return;
         }
-        if(isDeathDamage)
+        if (isDeathDamage)
         {
             stateMachine.ChangeState(deathState);
             return;
@@ -601,12 +647,12 @@ public class Player : Entity
             currentKnockbackDuration = knockbackDurations[2];
         }
         if (attackWeight == 0 && !CheckGroundedWhileHurtOrParry())
-            rb.velocity = new Vector2(0f, currentKnockbackDir.y);
+            rb.linearVelocity = new Vector2(0f, currentKnockbackDir.y);
         else
-            rb.velocity = new Vector2(currentKnockbackDir.x * -facingDir, currentKnockbackDir.y);
+            rb.linearVelocity = new Vector2(currentKnockbackDir.x * -facingDir, currentKnockbackDir.y);
         yield return new WaitForSeconds(currentKnockbackDuration);
         if (attackWeight == 0)
-            rb.velocity = new Vector2(rb.velocity.x, 0f);
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
     }
     public void SpawnPlayerSoulAfterDead()
     {
@@ -626,10 +672,10 @@ public class Player : Entity
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "Ladder")
-        {
-            canLadder = true;
-        }
+        //if (collision.gameObject.tag == "Ladder")
+        //{
+        //    canLadder = true;
+        //}
         if (collision.gameObject.layer == LayerMask.NameToLayer("CanDamagePlayer"))
         {
             if (stateMachine.currentState != dashState && stateMachine.currentState != airDashState)
@@ -638,36 +684,63 @@ public class Player : Entity
             }
         }
     }
-    private void OnTriggerStay2D(Collider2D collision)
-    {
-        if (collision.gameObject.tag == "Ladder")
-        {
-            canLadder = true;
-        }
-    }
+    //private void OnTriggerStay2D(Collider2D collision)
+    //{
+    //    if (collision.gameObject.tag == "Ladder")
+    //    {
+    //        canLadder = true;
+    //    }
+    //}
     public void SetKnockedFalseAfterBeHit()
     {
         CancelInvoke("SetKnockedFalse");
         Invoke("SetKnockedFalse", .3f);
     }
     private void SetKnockedFalse() => isKnocked = false;
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.gameObject.tag == "Ladder")
-        {
-            canLadder = false;
-        }
-    }
+    //private void OnTriggerExit2D(Collider2D collision)
+    //{
+    //    if (collision.gameObject.tag == "Ladder")
+    //    {
+    //        //canLadder = false;
+    //    }
+    //}
     public void RedFxOnFinishBoss()
     {
         entityFx.StartCoroutine(entityFx.RedFXForBoss());
     }
-    public IEnumerator ShadowFxOnDashAttackState() 
+    public IEnumerator ShadowFxOnDashAttackState()
     {
         SpriteRenderer playerSprite = transform.Find("Model").GetComponent<SpriteRenderer>();
         Color oriColor = playerSprite.color;
-        playerSprite.color = new Color(210f/255f, 140f / 255f, 240f / 255f);
+        playerSprite.color = new Color(210f / 255f, 140f / 255f, 240f / 255f);
         yield return new WaitForSecondsRealtime(1f);
         playerSprite.color = oriColor;
+    }
+    public void InteractNpc(Vector2 targetPos, int targeFacingDir, PlayerStates targetState, Action interactCallBack)
+    {
+        if(Vector2.Distance(transform.position, targetPos) <= .1f)
+        {
+            stateMachine.ChangeState(targetState);
+            if (facingDir != targeFacingDir)
+                Flip();
+            interactCallBack?.Invoke();
+            return;
+        }
+        interactNpcState.SetInteractInfo(targetPos, targeFacingDir, targetState, interactCallBack);
+        stateMachine.ChangeState(interactNpcState);
+    }
+    public void FlipWithPosX(float xPos)
+    {
+        if ((transform.position.x > xPos && facingDir == 1) ||
+            (transform.position.x < xPos && facingDir == -1))
+            Flip();
+    }
+    public void DisablePlayerControl()
+    {
+        this.enabled = false;
+    }
+    public void EnablePlayerControl()
+    {
+        this.enabled = true;
     }
 }

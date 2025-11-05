@@ -11,7 +11,7 @@ public class PlayerToLedgeGrabState : PlayerStates
     {
         base.Start();
         rb.gravityScale = 0f;
-        rb.velocity = Vector3.zero;
+        rb.linearVelocity = Vector3.zero;
         player.doubleJumped = false;
         player.attackState.airAttackCounter = 1;
         player.airDashState.airDashed = false;
@@ -27,7 +27,7 @@ public class PlayerToLedgeGrabState : PlayerStates
     public override void Update()
     {
         base.Update();
-        rb.velocity = Vector3.zero;
+        rb.linearVelocity = Vector3.zero;
         if (finishAnim)
             stateMachine.ChangeState(player.ledgeGrabState);
     }

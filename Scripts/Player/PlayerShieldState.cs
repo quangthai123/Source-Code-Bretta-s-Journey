@@ -26,7 +26,7 @@ public class PlayerShieldState : PlayerStates
     public override void Update()
     {
         base.Update();
-        rb.velocity = Vector2.zero;
+        rb.linearVelocity = Vector2.zero;
         if(stateDuration < 0)
         {
             player.anim.SetTrigger("FinishShield");

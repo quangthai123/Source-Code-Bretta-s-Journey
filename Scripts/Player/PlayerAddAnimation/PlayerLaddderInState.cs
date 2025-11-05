@@ -21,8 +21,12 @@ public class PlayerLaddderInState : PlayerStates
     public override void Update()
     {
         base.Update();
-        rb.velocity = Vector3.zero;
+        rb.gravityScale = 0f;
+        rb.linearVelocity = Vector3.zero;
         if (finishAnim)
+        {
+            player.ladderState.IsFromLadderInState = true;
             stateMachine.ChangeState(player.ladderState);
+        }
     }
 }

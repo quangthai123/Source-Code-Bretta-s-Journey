@@ -9,9 +9,11 @@ public class GodSwordStatue : NPC
     {
         swordUIcanvas = transform.GetChild(0).GetComponent<Canvas>();
         swordUIcanvas.gameObject.SetActive(false);
+        targetPosX = transform.position.x;
     }
     protected override void OnInteract()
     {
+        base.OnInteract();
         swordUIcanvas.gameObject.SetActive(true);
     }
 }

@@ -19,11 +19,11 @@ public class NotificationUI : MonoBehaviour
             Destroy(gameObject); 
         else
             Instance = this;
+        canvasGroup = GetComponent<CanvasGroup>();
         gameObject.SetActive(false);
     }
     void OnEnable()
     {
-        canvasGroup = GetComponent<CanvasGroup>();
         canvasGroup.alpha = 0f;
         escapeBtn.onClick.RemoveAllListeners();
         escapeBtn.onClick.AddListener(OnCloseNoti);

@@ -37,9 +37,8 @@ public class SwordPieceUI : InventoryLogic
     public Transform perfectSwordHadUI;
     [SerializeField] private Transform swordPieceHadTab;
     [SerializeField] private Transform perfectSwordHadTab;
-    protected override void Awake()
+    protected void Awake()
     {
-        base.Awake();
         if (Instance != null)
             Destroy(gameObject);
         else
@@ -57,9 +56,8 @@ public class SwordPieceUI : InventoryLogic
     }
     protected override void InitializeUIOnLoadScene()
     {
-        selectImage.SetActive(false);
+        selector.SetActive(false);
         selectImage2.gameObject.SetActive(false);
-        loreUI.SetActive(false);
         itemInforUI.SetActive(false);
         base.selectedItemImage.useSpriteMesh = true;
         base.selectedItemImage.gameObject.SetActive(false);
@@ -233,10 +231,10 @@ public class SwordPieceUI : InventoryLogic
     public void GetItemIndexByImage(Transform itemHadSlot)
     {
         selectedASwordPieceHadFirstTime = true;
-        selectImage.transform.SetParent(itemHadSlot.parent.parent, false);
-        selectImage.transform.position = new Vector2(itemHadSlot.position.x, itemHadSlot.position.y + selectImageOffSetYWithHadItem);
-        selectImage.transform.localScale = new Vector2(9.1f, 16.67f);
-        selectImage.SetActive(true);
+        selector.transform.SetParent(itemHadSlot.parent.parent, false);
+        selector.transform.position = new Vector2(itemHadSlot.position.x, itemHadSlot.position.y + selectImageOffSetYWithHadItem);
+        selector.transform.localScale = new Vector2(9.1f, 16.67f);
+        selector.SetActive(true);
 
         currentSelectPerfectSwordEquipped = null;
         if(selectBigSlot.parent.Find("Sword Perfect").gameObject.activeInHierarchy)
@@ -280,7 +278,8 @@ public class SwordPieceUI : InventoryLogic
             {
                 selectedItemName.text = item.itemName;
                 //selectedItemDescription.text = item.itemDescription;
-                selectedItemLore.text = item.itemLore;
+                selectedItemLoreTxt.text = item.itemLore;
+                selectedLore = item.itemLore;
                 break;
             }
         }
@@ -310,11 +309,14 @@ public class SwordPieceUI : InventoryLogic
                         break;
                     }
                 }
-                selectedItemLore.text = item.lore;
+                selectedItemLoreTxt.text = item.lore;
+                selectedLore = item.lore;
                 break;
             }
         }
         itemInforUI.SetActive(true);
+        if (scrollViewHandler != null)
+            StartCoroutine(scrollViewHandler.ResetScrollView());
         DeactivateUnEquipButton();
     }
     public void SetSwordFunctionTMPOnChangePairEffect(bool active)
@@ -358,7 +360,7 @@ public class SwordPieceUI : InventoryLogic
             bool canActivateEquipButton = true;
             //if ((!selectImage.activeInHierarchy && selectedASwordPieceHadFirstTime)
             //    || (currentSelectPerfectSwordHad != null && !selectedASwordPieceHadFirstTime))
-            if ((!selectImage.activeInHierarchy && selectedASwordPieceHadFirstTime) || currentSelectHadSwordPiece == null)
+            if ((!selector.activeInHierarchy && selectedASwordPieceHadFirstTime) || currentSelectHadSwordPiece == null)
             {
                 itemInforUI.SetActive(false);
                 currentSelectHadSwordPiece = null;
@@ -444,7 +446,7 @@ public class SwordPieceUI : InventoryLogic
                 currentSelectHadSwordPiece.localPosition = Vector2.zero;
 
                 CloseInforUI();
-                selectImage.SetActive(false);
+                selector.SetActive(false);
                 DeactivateEquipButton();
                 DeactivateUnEquipButton();
 
@@ -519,10 +521,10 @@ public class SwordPieceUI : InventoryLogic
                         swordPieceToUnEquip.SetParent(image.transform, true);
                         swordPieceToUnEquip.localPosition = Vector2.zero;
                         currentSelectHadSwordPiece = swordPieceToUnEquip;
-                        selectImage.transform.position = new Vector2(image.transform.position.x,
+                        selector.transform.position = new Vector2(image.transform.position.x,
                             image.transform.position.y + selectImageOffSetYWithHadItem);
-                        selectImage.transform.localScale = new Vector2(9.1f, 16.67f);
-                        selectImage.gameObject.SetActive(true);
+                        selector.transform.localScale = new Vector2(9.1f, 16.67f);
+                        selector.gameObject.SetActive(true);
                         break;
                     }
                 }
@@ -538,7 +540,7 @@ public class SwordPieceUI : InventoryLogic
     public void OnCloseMergedSwordNoti() => perfectSwordChecker.OnCloseMergedSwordNoti();
     public void SetSwordPieceUIInteractable() => perfectSwordChecker.SetSwordPieceUIInteractable();
     public void SetSwordPieceUIUniteractable() => perfectSwordChecker.SetSwordPieceUIUninteractable();
-    public void DeactivateSelectImage() => selectImage.gameObject.SetActive(false);
+    public void DeactivateSelectImage() => selector.gameObject.SetActive(false);
     public void OnClickSwordPieceHadTab()
     {
         if (swordPieceHadTab.localScale == new Vector3(1.25f, 1.25f, 1f))
@@ -553,7 +555,7 @@ public class SwordPieceUI : InventoryLogic
         {
             GetPerfectSwordInforByItsImage(currentSelectPerfectSwordEquipped.GetComponent<Image>());
         }
-        selectImage.SetActive(false);
+        selector.SetActive(false);
         selectImage2.gameObject.SetActive(false);
         ActivateAllPieceSlotOnSwordPieceTabOpen();
         swordPieceHadUI.gameObject.SetActive(true);

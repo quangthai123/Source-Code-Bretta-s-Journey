@@ -12,7 +12,7 @@ public class PlayerHeavyLandingState : PlayerStates
     {
         base.Start();
         player.knockFlip = true;
-        rb.velocity = new Vector2(0f, rb.velocity.y);
+        rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
         PlayerEffectSpawner.instance.Spawn(PlayerEffectSpawner.instance.strongGroundedEffect, player.centerEffectPos.position, Quaternion.identity);
         if (SceneScenarioSelectLv.instance != null)
             GameManager.Instance.ShowPlaceUI();
@@ -30,8 +30,8 @@ public class PlayerHeavyLandingState : PlayerStates
         if (finishAnim)
             stateMachine.ChangeState(player.idleState);
         if (!player.CheckSlope())
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
         else
-            rb.velocity = new Vector2(0f, rb.velocity.y);
+            rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
     }
 }

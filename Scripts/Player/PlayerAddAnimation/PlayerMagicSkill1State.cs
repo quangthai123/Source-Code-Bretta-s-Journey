@@ -30,7 +30,7 @@ public class PlayerMagicSkill1State : PlayerStates
     {
         base.Update();
         rb.gravityScale = 0f;
-        rb.velocity = Vector2.zero;
+        rb.linearVelocity = Vector2.zero;
         if (finishAnim)
         {
             if(player.CheckGrounded() || player.CheckJumpOnSlope())

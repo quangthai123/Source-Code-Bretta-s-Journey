@@ -17,7 +17,7 @@ public class PlayerWallSlideState : PlayerStates
         player.attackState.airAttackCounter = 1;
         player.airDashState.airDashed = false;
         player.canGrabLedge = true;
-        rb.velocity = Vector2.zero;
+        rb.linearVelocity = Vector2.zero;
     }
     public override void Exit()
     {
@@ -32,7 +32,7 @@ public class PlayerWallSlideState : PlayerStates
         base.Update();
         if (player.CheckWalled() && player.stateMachine.currentState != player.fallState)
         {
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
             rb.gravityScale = 0f;
         }
         else if(player.stateMachine.currentState != player.wallJumpState)

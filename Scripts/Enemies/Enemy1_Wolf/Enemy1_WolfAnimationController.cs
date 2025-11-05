@@ -14,8 +14,8 @@ public class Enemy1_WolfAnimationController : EnemyAnimationController
     {
         enemy.transform.Find("Col Trigger").gameObject.layer = LayerMask.NameToLayer("Can Collide Player");
         if (!enemy.CheckNotFrontGround()) 
-            enemy.rb.velocity = new Vector2(enemy.attackForce.x * enemy.facingDir, enemy.attackForce.y);
+            enemy.rb.linearVelocity = new Vector2(enemy.attackForce.x * enemy.facingDir, enemy.attackForce.y);
         else 
-            enemy.rb.velocity = new Vector2(0f, enemy.attackForce.y);
+            enemy.rb.linearVelocity = new Vector2(0f, enemy.attackForce.y);
     }
 }

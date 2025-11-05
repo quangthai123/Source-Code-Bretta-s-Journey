@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class InventoryUI : MonoBehaviour
@@ -21,6 +22,9 @@ public class InventoryUI : MonoBehaviour
 
     [SerializeField] private Transform horizontalSelectTab;
     [SerializeField] private Transform closeInventoryBtn;
+    private FadeEffectHandler fadeEffectHandler;
+
+    public bool FrezeeInventoryAction { get; set; }
 
     private void Awake()
     {
@@ -28,35 +32,43 @@ public class InventoryUI : MonoBehaviour
             Destroy(gameObject);
         else
             Instance = this;
-    }
-    void Start()
-    {
+        //DontDestroyOnLoad(gameObject);
+        loadedInventoryUI = false;
         rightArrow = transform.Find("Right Arrow");
         leftArrow = transform.Find("Left Arrow");
-        selectedTab = SaveManager.instance.tempGameData.selectingTab;
-        loadedInventoryUI = false;
-        for (int i = 0; i < tabsUI.Length; i++)
-        {
-            tabsUI[i].SetActive(true);
-        }
         rightArrowCorou = null;
         leftArrowCorou = null;
+        FrezeeInventoryAction = false;
+        fadeEffectHandler = GetComponent<FadeEffectHandler>();
+        InitializeAllInventoryUI();
+    }
+    public void InitializeAllInventoryUI()
+    {
+        Debug.Log("So Tabs UI " + tabsUI.Length);
+        foreach (GameObject tabUI in tabsUI)
+        {
+            Debug.Log("Init Tab UI " + tabUI.name);
+            tabUI.SetActive(true);
+        }
     }
     private void Update()
+    {        
+        if (Input.GetKeyDown(KeyCode.Q) && !FrezeeInventoryAction)
+            ClickLeftArrow();
+        if(Input.GetKeyDown(KeyCode.E) && !FrezeeInventoryAction)
+            ClickRightArrow();
+        if(Input.GetKeyDown(KeyCode.Escape) && !FrezeeInventoryAction)
+            GameManager.Instance.CloseInventory();
+    }
+    private void LateUpdate()
     {
         if (!loadedInventoryUI)
         {
+            Debug.Log("Load Inventory UI!!!!!!!!!");
             loadedInventoryUI = true;
             LoadUIBySelectedTab();
+            gameObject.SetActive(false);
         }
-        //selector.position = new Vector2(tabs[selectedTab].position.x, selector.transform.position.y);
-
-        if (Input.GetKeyDown(KeyCode.Q))
-            ClickLeftArrow();
-        if(Input.GetKeyDown(KeyCode.E))
-            ClickRightArrow();
-        if(Input.GetKeyDown(KeyCode.Escape))
-            GameManager.Instance.CloseInventory();
     }
     public void OnClickUITab(int index)
     {
@@ -86,9 +98,9 @@ public class InventoryUI : MonoBehaviour
                 tabsUI[i].gameObject.SetActive(true);
                 tabs[i].Find("MainImage_Normal").gameObject.SetActive(false);
                 tabs[i].Find("MainImage_Selected").gameObject.SetActive(true);
-                selector.position = new Vector2(tabs[i].position.x, selector.transform.position.y);
                 selector.SetParent(tabs[i], true);
                 selector.SetSiblingIndex(3);
+                selector.localPosition = new Vector2(0f, 19.5f);
             }
             else
             {
@@ -116,12 +128,12 @@ public class InventoryUI : MonoBehaviour
             StopCoroutine(rightArrowCorou);
             rightArrowCorou = null;
         }
-        if (selectedTab == 6)
+        if (selectedTab == tabs.Length - 1)
             selectedTab = 0;
         else
             selectedTab++;
         LoadUIBySelectedTab();
-        CloseAllLoreUI();
+        //CloseAllLoreUI();
     }
     public void ClickLeftArrow()
     {
@@ -137,11 +149,11 @@ public class InventoryUI : MonoBehaviour
             leftArrowCorou = null;
         }
         if (selectedTab == 0)
-            selectedTab = 6;
+            selectedTab = tabs.Length - 1;
         else
             selectedTab--;
         LoadUIBySelectedTab();
-        CloseAllLoreUI();
+        //CloseAllLoreUI();
     }
     public void GetUpLeftArrow()
     {
@@ -165,17 +177,29 @@ public class InventoryUI : MonoBehaviour
     }
     public void SetInventoryUIUninteractable()
     {
+        FrezeeInventoryAction = true;
         closeInventoryBtn.GetComponent<CanvasGroup>().interactable = false;
         horizontalSelectTab.GetComponent<CanvasGroup>().interactable = false;
-        leftArrow.gameObject.SetActive(false);
-        rightArrow.gameObject.SetActive(false);
+        //leftArrow.gameObject.SetActive(false);
+        //rightArrow.gameObject.SetActive(false);
     }
     public void SetInventoryUIInteractable()
     {
+        FrezeeInventoryAction = false;
         closeInventoryBtn.GetComponent<CanvasGroup>().interactable = true;
         horizontalSelectTab.GetComponent<CanvasGroup>().interactable = true;
-        leftArrow.gameObject.SetActive(true);
-        rightArrow.gameObject.SetActive(true);
+        //leftArrow.gameObject.SetActive(true);
+        //rightArrow.gameObject.SetActive(true);
+    }
+    public void Open()
+    {
+        FrezeeInventoryAction = true;
+        fadeEffectHandler.StartFadeIn(() => FrezeeInventoryAction = false);
+    }
+    public void Close()
+    {
+        FrezeeInventoryAction = true;
+        fadeEffectHandler.StartFadeOut(() => gameObject.SetActive(false));
     }
 }
 

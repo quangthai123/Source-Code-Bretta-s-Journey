@@ -3,15 +3,32 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+public enum InteractNpcStateType
+{
+    Idle,
+    Rest
+}
 public abstract class NPC : MonoBehaviour
 {
+    protected Player player;
     protected bool canInteract;
+    protected bool interacted;
     [SerializeField] protected GameObject showInteractImage;
+    [Header("Player Interact Info")]
+    [SerializeField] protected float targetPosX;
+    [SerializeField] protected int targetFacingDir;
+    [SerializeField] protected InteractNpcStateType interactType;
+    protected virtual void Start()
+    {
+        player = Player.Instance;
+    }
     protected virtual void Update()
     {
-        if((Input.GetKeyDown(KeyCode.E) || InputManager.Instance.attacked) && canInteract)
+        if((Input.GetKeyDown(KeyCode.E) || InputManager.Instance.attacked) 
+            && canInteract && !interacted && player.isActiveAndEnabled)
         {
-            OnInteract();
+            interacted = true;
+            StartInteract();
         }
     }
     protected void OnTriggerEnter2D(Collider2D collision)
@@ -30,5 +47,23 @@ public abstract class NPC : MonoBehaviour
             showInteractImage.SetActive(false);
         }
     }
-    protected abstract void OnInteract();
+    protected virtual void StartInteract()
+    {
+        PlayScreenUI.instance.HideControlUI();
+        PlayerStates targetState;
+        switch (interactType)
+        {
+            case InteractNpcStateType.Rest:
+                targetState = player.restState;
+                break;
+            default:
+                targetState = player.idleState;
+                break;
+        }
+        player.InteractNpc(new Vector2(targetPosX, player.transform.position.y), targetFacingDir, targetState, OnInteract);
+    }
+    protected virtual void OnInteract()
+    {
+        interacted = false;
+    }
 }

@@ -13,7 +13,7 @@ public class Enemy1_WolfStunnedState : EnemyStates
     public override void Start()
     {
         base.Start();
-        rb.velocity = new Vector2(0f, rb.velocity.y);
+        rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
         enemy.entityFx.StartCoroutine(enemy.entityFx.BeCounterAttackedFlashFx());
         enemy.transform.position = new Vector2(enemy.transform.position.x - enemy.facingDir * 1.5f, enemy.transform.position.y);
     }
@@ -25,7 +25,7 @@ public class Enemy1_WolfStunnedState : EnemyStates
     public override void Update()
     {
         base.Update();
-        rb.velocity = new Vector2(0f, rb.velocity.y);
+        rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
         if (enemy.canBeHitByCounterAttack)
             stateMachine.ChangeState(enemy.hurtState);
     }

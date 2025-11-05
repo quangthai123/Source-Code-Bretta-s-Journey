@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
@@ -34,12 +35,23 @@ public class MainMenu : MonoBehaviour
     [SerializeField] private TextMeshProUGUI currencyText3;
     [SerializeField] private TextMeshProUGUI playedTimeText3;
     [SerializeField] private TextMeshProUGUI deadCountText3;
+    [Header("Buttons")]
+    [SerializeField] private Button start1Btn;
+    [SerializeField] private Button start2Btn;
+    [SerializeField] private Button start3Btn;
+
+    [SerializeField] private Button acceptDelete1Btn;
+    [SerializeField] private Button acceptDelete2Btn;
+    [SerializeField] private Button acceptDelete3Btn;
+
+    private GameDatas tempGameData;
 
     private int playedTime;
     private int playedTimeHour;
     private int playedTimeMinute;
     void Start()
     {
+        tempGameData = SaveManager.instance.tempGameData;
         selectSaveSlotUI.SetActive(false);
         deleteSlot1.gameObject.SetActive(false);
         deleteSlot2.gameObject.SetActive(false);
@@ -47,9 +59,9 @@ public class MainMenu : MonoBehaviour
 
         if(SaveManager.instance.CheckHadSavedData(1))
         {
-            currencyText1.text = SaveManager.instance.tempGameData.currency+"";
-            deadCountText1.text = "Died: " + SaveManager.instance.tempGameData.deadCount;
-            playedTime = SaveManager.instance.tempGameData.playedTime;
+            currencyText1.text = tempGameData.currency+"";
+            deadCountText1.text = "Died: " + tempGameData.deadCount;
+            playedTime = tempGameData.playedTime;
             playedTimeHour = playedTime / 3600;
             playedTimeMinute = (playedTime - playedTimeHour * 3600)/60;
             playedTimeText1.text = "Played Time: " + playedTimeHour + "h " + playedTimeMinute+"m";
@@ -62,9 +74,9 @@ public class MainMenu : MonoBehaviour
         }
         if (SaveManager.instance.CheckHadSavedData(2))
         {
-            currencyText2.text = SaveManager.instance.tempGameData.currency + "";
-            deadCountText2.text = "Died: " + SaveManager.instance.tempGameData.deadCount;
-            playedTime = SaveManager.instance.tempGameData.playedTime;
+            currencyText2.text = tempGameData.currency + "";
+            deadCountText2.text = "Died: " + tempGameData.deadCount;
+            playedTime = tempGameData.playedTime;
             playedTimeHour = playedTime / 3600;
             playedTimeMinute = (playedTime - playedTimeHour * 3600) / 60;
             playedTimeText2.text = "Played Time: " + playedTimeHour + "h " + playedTimeMinute + "m";
@@ -79,9 +91,9 @@ public class MainMenu : MonoBehaviour
         if (SaveManager.instance.CheckHadSavedData(3))
         {
 
-            currencyText3.text = SaveManager.instance.tempGameData.currency + "";
-            deadCountText3.text = "Died: " + SaveManager.instance.tempGameData.deadCount;
-            playedTime = SaveManager.instance.tempGameData.playedTime;
+            currencyText3.text = tempGameData.currency + "";
+            deadCountText3.text = "Died: " + tempGameData.deadCount;
+            playedTime = tempGameData.playedTime;
             playedTimeHour = playedTime / 3600;
             playedTimeMinute = (playedTime - playedTimeHour * 3600) / 60;
             playedTimeText3.text = "Played Time: " + playedTimeHour + "h " + playedTimeMinute + "m";
@@ -93,12 +105,25 @@ public class MainMenu : MonoBehaviour
             trongUI3.gameObject.SetActive(true);
             haveProcessSaveSlot3.gameObject.SetActive(false);
         }
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        start1Btn.onClick.RemoveAllListeners();
+        start2Btn.onClick.RemoveAllListeners();
+        start3Btn.onClick.RemoveAllListeners();
+
+        start1Btn.onClick.AddListener(SaveManager.instance.StartGameData1);
+        start2Btn.onClick.AddListener(SaveManager.instance.StartGameData2);
+        start3Btn.onClick.AddListener(SaveManager.instance.StartGameData3);
+
+        acceptDelete1Btn.onClick.RemoveAllListeners();
+        acceptDelete2Btn.onClick.RemoveAllListeners();
+        acceptDelete3Btn.onClick.RemoveAllListeners();
+
+        acceptDelete1Btn.onClick.AddListener(AcceptDeleteSaveSlot);
+        acceptDelete2Btn.onClick.AddListener(AcceptDeleteSaveSlot);
+        acceptDelete3Btn.onClick.AddListener(AcceptDeleteSaveSlot);
+
+        if(Player.Instance != null)
+            Destroy(Player.Instance.gameObject);
     }
     public void OpenSelectSaveSlotUI()
     {
@@ -122,16 +147,19 @@ public class MainMenu : MonoBehaviour
     {
         if (currentSelectSaveSlot == 1)
         {
+            SaveManager.instance.DeleteSaveSlot1();
             haveProcessSaveSlot1.gameObject.SetActive(false);
             trongUI1.gameObject.SetActive(true);
             deleteSlot1.gameObject.SetActive(false);
         } else if (currentSelectSaveSlot == 2)
         {
+            SaveManager.instance.DeleteSaveSlot2();
             haveProcessSaveSlot2.gameObject.SetActive(false);
             trongUI2.gameObject.SetActive(true);
             deleteSlot2.gameObject.SetActive(false);
         } else
         {
+            SaveManager.instance.DeleteSaveSlot3();
             haveProcessSaveSlot3.gameObject?.SetActive(false);
             trongUI3.gameObject.SetActive(true);
             deleteSlot3.gameObject.SetActive(false);
@@ -156,4 +184,5 @@ public class MainMenu : MonoBehaviour
     {
         Application.Quit();
     }
+ 
 }

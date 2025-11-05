@@ -87,6 +87,8 @@ public abstract class Spawner : MonoBehaviour
     }
     public void Despawn(Transform obj)
     {
+        if (poolObjList.Contains(obj))
+            return;
         poolObjList.Add(obj);
         obj.gameObject.SetActive(false);
     }

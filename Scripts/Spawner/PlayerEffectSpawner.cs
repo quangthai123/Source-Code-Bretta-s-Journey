@@ -42,6 +42,7 @@ public class PlayerEffectSpawner : Spawner
         else
             instance = this;
         base.Awake();
+        DontDestroyOnLoad(gameObject);
     }
     public override Transform Spawn(string name, Vector2 pos, Quaternion rot)
     {

@@ -7,6 +7,6 @@ public class LoadingSceneManager : MonoBehaviour
     void Start()
     {
         Debug.Log("Load Finshed!");
-        LoadingScene.instance.FadeOut();
+        LoadingScene.instance.StartFadeOut(1/6f);
     }
 }

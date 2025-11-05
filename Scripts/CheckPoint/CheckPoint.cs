@@ -3,76 +3,83 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class CheckPoint : MonoBehaviour
+public class CheckPoint : NPC
 {
     public static CheckPoint instance;
     private Animator anim;
-    [SerializeField] private bool canSaveGame;
-    private bool isSaving;
+    private GameDatas tempGameData;
     private void Awake()
     {
         if (instance != null)
             Destroy(gameObject);
         else
             instance = this;
-    }
-    private void Start()
-    {
         anim = GetComponent<Animator>();
-        canSaveGame = false;
-        isSaving = false;
+        tempGameData = Resources.Load<GameDatas>("TempGameData");
     }
-    private void OnTriggerEnter2D(Collider2D collision)
+    protected override void Start()
     {
-        if (collision.gameObject.tag == "Player")
-        {
-            Debug.Log("Can Save Game!");
-            canSaveGame = true;
-        }
-        //else if (collision.gameObject.tag == "Player" && SceneScenarioSelectLv.instance != null &&
-        //    !SceneScenarioSelectLv.instance.isScenario)
-        //{
-        //    Debug.Log("Auto Save on start new game");
-        //    SaveGameByCheckPoint();
-        //}
+        base.Start();
+        targetPosX = transform.position.x;
     }
-    private void OnTriggerExit2D(Collider2D collision)
+    protected override void OnInteract()
     {
-        if (collision.gameObject.tag == "Player")
-        {
-            canSaveGame = false;
-        }
+        base.OnInteract();
+        showInteractImage.SetActive(false);
+        Invoke("SetSaveGame", 1f);
     }
-    private void Update()
+    private void SetSaveGame()
     {
-        //if(Input.GetKeyDown(KeyCode.Escape))
-        //{
-        //    SceneManager.LoadScene(0);
-        //}
-        if(canSaveGame && !isSaving)
-        {
-            if (Input.GetKeyDown(KeyCode.E) || InputManager.Instance.attacked)
-            {
-                SaveGameByCheckPoint();
-            }
-        }
+        anim.SetBool("Saving", true);
+        Invoke("StartFadeIn", 1f);
     }
-
-    public void SaveGameByCheckPoint()
+    private void StartFadeIn()
+    {
+        LoadingScene.instance.StartFadeIn(1 / 2f, false);
+        Invoke("SaveGame", .75f);
+    }
+    private void SaveGame()
     {
         Debug.Log("Saved Game!");
-        isSaving = true;
-        anim.SetBool("Saving", true);
-        Player.Instance.playerStats.Resting();
-        SaveManager.instance.tempGameData.tempCurrentScene = SceneManager.GetActiveScene().name;
-        SaveManager.instance.tempGameData.currentScene = SaveManager.instance.tempGameData.tempCurrentScene;
-        SaveManager.instance.tempGameData.initializePos = Player.Instance.transform.position;
-        SaveManager.instance.tempGameData.revivalCheckPointPos = transform.position;
+        player.playerStats.Resting();
+        tempGameData.tempCurrentScene = SceneManager.GetActiveScene().name;
+        tempGameData.currentScene = tempGameData.tempCurrentScene;
+        tempGameData.initializePos = player.transform.position;
+        tempGameData.revivalCheckPointPos = transform.position;
         SaveManager.instance.SaveGame();
+        Invoke("SetOutRest", 1.5f);
+    }
+    private void SetOutRest()
+    {
+        LoadingScene.instance.StartFadeOut(1 / 2f);
+        // them tuy chon dich chuyen ve lang va dich chuyen den cac check point khac
+        Invoke("SetPlayerOutRest", 1.5f);
+    }
+    private void SetPlayerOutRest()
+    {
+        player.restState.SetOutRest();
+        //showInteractImage.SetActive(true);
     }
     private void SetSavingFalse()
     {
         anim.SetBool("Saving", false);
-        isSaving = false;
+    }
+    public void ShowInteractImage()
+    {
+        if (showInteractImage.activeInHierarchy)
+            return;
+        CanvasGroup canvasGroup = showInteractImage.GetComponent<CanvasGroup>();
+        canvasGroup.alpha = 0;
+        showInteractImage.SetActive(true);
+        StartCoroutine(ShowInteractImageFadeFx(canvasGroup));
+    }
+    private IEnumerator ShowInteractImageFadeFx(CanvasGroup cg)
+    {
+        while (cg.alpha < 1f)
+        {
+            yield return new WaitForSecondsRealtime(.1f);
+            cg.alpha += .2f;
+        }
+        cg.alpha = 1f;
     }
 }

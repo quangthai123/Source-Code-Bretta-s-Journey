@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerFallState : PlayerAirState
@@ -28,9 +29,9 @@ public class PlayerFallState : PlayerAirState
             stateMachine.ChangeState(player.attackState);
             return;
         }
-        rb.velocity = new Vector2(horizontalInput * player.moveSpeed, rb.velocity.y);
+        rb.linearVelocity = new Vector2(horizontalInput * player.moveSpeed, rb.linearVelocity.y);
         if(InputManager.Instance.moveDir.x != 0)
-            rb.velocity = new Vector2(InputManager.Instance.moveDir.x * player.moveSpeed, rb.velocity.y);
+            rb.linearVelocity = new Vector2(InputManager.Instance.moveDir.x * player.moveSpeed, rb.linearVelocity.y);
         if (player.CheckGrounded())
         {
             if(!player.CheckSlope() || (player.CheckSlope() && player.CheckJumpOnSlope()))
@@ -66,15 +67,19 @@ public class PlayerFallState : PlayerAirState
         base.FixedUpdate();
         //if(stateMachine.currentState != player.landingState && stateMachine.currentState != player.heavyLandingState)
     }
+    public override void LateUpdate() 
+    {
+        base.LateUpdate();
+    }
     protected override void ChangeStateByInput()
     {
         base.ChangeStateByInput();
         if ((Input.GetKeyDown(KeyCode.LeftShift) || InputManager.Instance.dashed))
         {
             if (!player.CheckAirDashGrounded() && !player.airDashState.airDashed) 
-            {  
-                Debug.Log("Air dash from fall");
-                stateMachine.ChangeState(player.airDashState);          
+            {
+                if (player.TempGameData.GainedAbilities[1])
+                    stateMachine.ChangeState(player.airDashState);          
             }
             else if (player.CheckAirDashGrounded())
             {
@@ -82,6 +87,13 @@ public class PlayerFallState : PlayerAirState
                 player.canChangeToDashState = true;
             }
 
+        }
+        if(verticalInput != 0 && player.canLadder && player.transform.position.y > player.LadderBottomPosY)
+        {
+            if (Mathf.Abs(player.LadderPosX - player.transform.position.x) >= .5f)
+                stateMachine.ChangeState(player.enterLadderState);
+            else
+                stateMachine.ChangeState(player.enterLadder1State);
         }
     }
 }

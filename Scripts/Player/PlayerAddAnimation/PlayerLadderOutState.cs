@@ -10,6 +10,7 @@ public class PlayerLadderOutState : PlayerStates
     public override void Start()
     {
         base.Start();
+        rb.gravityScale = 0f;
     }
     public override void Exit()
     {
@@ -18,7 +19,7 @@ public class PlayerLadderOutState : PlayerStates
     public override void Update()
     {
         base.Update();
-        rb.velocity = Vector2.zero;
+        rb.linearVelocity = Vector2.zero;
         if (finishAnim)
             stateMachine.ChangeState(player.idleState);
     }

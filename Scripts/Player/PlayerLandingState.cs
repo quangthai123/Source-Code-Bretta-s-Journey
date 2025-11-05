@@ -11,7 +11,7 @@ public class PlayerLandingState : PlayerStates
     {
         base.Start();
         player.knockFlip = true;
-        rb.velocity = new Vector2(0f, rb.velocity.y);
+        rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
         PlayerEffectSpawner.instance.Spawn(PlayerEffectSpawner.instance.strongGroundedEffect, player.centerEffectPos.position, Quaternion.identity);       
         AudioManager.instance.PlaySFX(14);
     }
@@ -30,8 +30,8 @@ public class PlayerLandingState : PlayerStates
             stateMachine.ChangeState(player.idleState);
         }
         if (!player.CheckSlope())
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
         else
-            rb.velocity = new Vector2(0f, rb.velocity.y);
+            rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
     }
 }

@@ -23,10 +23,10 @@ public class Skill0Controller : CanDamageEnemy
             boxCol.enabled = true;
             anim.SetTrigger("CanLaunch");
             anim.speed = 1f;
-            rb.velocity = transform.right * launchSpeed;
+            rb.linearVelocity = transform.right * launchSpeed;
         }
         else
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
     }
     protected override void OnTriggerEnter2D(Collider2D collision)
     {

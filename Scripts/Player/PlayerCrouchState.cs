@@ -27,7 +27,7 @@ public class PlayerCrouchState : PlayerStates
     {
         base.Update();
         if (player.CheckGrounded())
-            rb.velocity = Vector3.zero;
+            rb.linearVelocity = Vector3.zero;
         else
             stateMachine.ChangeState(player.fallState);
         if (horizontalInput != player.facingDir && InputManager.Instance.moveDir.x != player.facingDir && horizontalInput != 0 && InputManager.Instance.moveDir.x != 0)

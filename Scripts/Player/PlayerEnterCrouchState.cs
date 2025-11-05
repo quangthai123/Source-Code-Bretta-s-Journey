@@ -11,7 +11,7 @@ public class PlayerEnterCrouchState : PlayerStates
     public override void Start()
     {
         base.Start();
-        rb.velocity = Vector2.zero;
+        rb.linearVelocity = Vector2.zero;
         MobileInputTesting.Instance.CanEnableMagicBtnToUseMagicSkill2();
     }
     public override void Exit()
@@ -24,7 +24,7 @@ public class PlayerEnterCrouchState : PlayerStates
     {
         base.Update();
         if (player.CheckGrounded())
-            rb.velocity = Vector3.zero;
+            rb.linearVelocity = Vector3.zero;
         else
             stateMachine.ChangeState(player.fallState);
         if (finishAnim)

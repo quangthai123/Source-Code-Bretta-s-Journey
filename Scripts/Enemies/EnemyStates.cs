@@ -45,7 +45,7 @@ public class EnemyStates
         if ((enemyBase.transform.position.x < player.transform.position.x && enemyBase.facingDir == -1)
             || (enemyBase.transform.position.x > player.transform.position.x && enemyBase.facingDir == 1))
         {
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
             enemyBase.Flip();
         }
     }
@@ -53,7 +53,7 @@ public class EnemyStates
     {
         if (enemyBase.CheckNotFrontGround() || enemyBase.CheckWalled())
         {
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
             enemyBase.Flip();
         }
     }

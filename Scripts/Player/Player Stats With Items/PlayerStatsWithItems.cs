@@ -5,29 +5,33 @@ using UnityEngine;
 public class PlayerStatsWithItems : MonoBehaviour
 {
     private PlayerStats playerStats;
+    private GameDatas tempGameData;
+    private Player player;
     private void Awake()
     {
+        player = GetComponent<Player>();
         playerStats = GetComponent<PlayerStats>();
+        tempGameData = Resources.Load<GameDatas>("TempGameData");
     }
     private void Start()
     {
-        if(SaveManager.instance.tempGameData.amorialEquippedItems != null)
+        if(tempGameData.amorialEquippedItems != null)
         {
-            foreach(int index in SaveManager.instance.tempGameData.amorialEquippedItems)
+            foreach(int index in tempGameData.amorialEquippedItems)
             {
                 EquipArmorial(index);
             }
         }
-        if (SaveManager.instance.tempGameData.perfectSwordsEquipped != null)
+        if (tempGameData.perfectSwordsEquipped != null)
         {
-            foreach (int index in SaveManager.instance.tempGameData.perfectSwordsEquipped)
+            foreach (int index in tempGameData.perfectSwordsEquipped)
             {
                 EquipPerfectSword(index);
             }
         }
-        if (SaveManager.instance.tempGameData.swordPairsActivated != null)
+        if (tempGameData.swordPairsActivated != null)
         {
-            foreach (int index in SaveManager.instance.tempGameData.swordPairsActivated)
+            foreach (int index in tempGameData.swordPairsActivated)
             {
                 ActivateSwordPair(index);
             }
@@ -40,15 +44,15 @@ public class PlayerStatsWithItems : MonoBehaviour
             case 0: // khang 10% vat ly
                 playerStats.resistantRate.AddModifier(10f); break;
             case 2: // Tang thoi gian su dung khien: 0.2f => 0.5f 
-                Player.Instance.shieldDuration = 0.6f; break;
+                player.shieldDuration = 0.6f; break;
             case 3: // Giam thoi gian cho cua ky nang luot: 0.6f => 0.3f
-                Player.Instance.dashCooldown = 0.3f; break;
+                player.dashCooldown = 0.3f; break;
             case 4: // Tang khoang cach cua ky nang luot: 0.3f => 0.45f
-                Player.Instance.dashDuration = 0.45f; break;
+                player.dashDuration = 0.45f; break;
             case 5: // Tang toc do di chuyen: 9f => 11f
-                Player.Instance.moveSpeed = 11f; break;
+                player.moveSpeed = 11f; break;
             case 6: // Giam thoi gian su dung binh mau: 1.8f => 0.9f
-                Player.Instance.healingDuration = 1f; break;
+                player.healingDuration = 1f; break;
             // 7 la Mien moi sat thuong trong khi su dung binh mau
             case 8: // Khang 15% vat ly
                 playerStats.resistantRate.AddModifier(15f); break;
@@ -64,15 +68,15 @@ public class PlayerStatsWithItems : MonoBehaviour
             case 0:
                 playerStats.resistantRate.RemoveModifier(10f); break;
             case 2: // Giam lai thoi gian su dung khien: 0.5f => 0.2f 
-                Player.Instance.shieldDuration = 0.4f; break;
+                player.shieldDuration = 0.4f; break;
             case 3: // Tang lai thoi gian cho cua ky nang luot: 0.3f => 0.8f
-                Player.Instance.dashCooldown = 0.6f; break;
+                player.dashCooldown = 0.6f; break;
             case 4: // Giam lai khoang cach cua ky nang luot: 0.45f => 0.32f
-                Player.Instance.dashDuration = 0.32f; break;
+                player.dashDuration = 0.32f; break;
             case 5: // Giam lai toc do di chuyen: 11f => 9f
-                Player.Instance.moveSpeed = 9f; break;
+                player.moveSpeed = 9f; break;
             case 6: // Tang lai thoi gian su dung binh mau: 0.9f => 1.8f
-                Player.Instance.healingDuration = 1.8f; break;
+                player.healingDuration = 1.8f; break;
             // 7 la Mien moi sat thuong trong khi su dung binh mau
             case 8: // Khang 15% vat ly
                 playerStats.resistantRate.RemoveModifier(15f); break;
@@ -122,10 +126,10 @@ public class PlayerStatsWithItems : MonoBehaviour
     }
     public bool CheckEquippedArmorial(int index)
     {
-        if (SaveManager.instance.tempGameData.amorialEquippedItems == null ||
-            (SaveManager.instance.tempGameData.amorialEquippedItems != null && SaveManager.instance.tempGameData.amorialEquippedItems.Count < 1))
+        if (tempGameData.amorialEquippedItems == null ||
+            (tempGameData.amorialEquippedItems != null && tempGameData.amorialEquippedItems.Count < 1))
             return false;
-        foreach (int i in SaveManager.instance.tempGameData.amorialEquippedItems)
+        foreach (int i in tempGameData.amorialEquippedItems)
         {
             if(index == i)
                 return true;
@@ -134,7 +138,7 @@ public class PlayerStatsWithItems : MonoBehaviour
     }
     public bool CheckEquippedPerfectSword(int index)
     {
-        foreach (int i in SaveManager.instance.tempGameData.perfectSwordsEquipped)
+        foreach (int i in tempGameData.perfectSwordsEquipped)
         {
             if (index == i)
                 return true;
@@ -143,7 +147,7 @@ public class PlayerStatsWithItems : MonoBehaviour
     }
     public bool CheckActivatedSwordPair(int index)
     {
-        foreach (int i in SaveManager.instance.tempGameData.swordPairsActivated)
+        foreach (int i in tempGameData.swordPairsActivated)
         {
             if (index == i)
                 return true;

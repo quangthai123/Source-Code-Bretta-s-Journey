@@ -5,10 +5,10 @@ using UnityEngine;
 
 public class EnemiesManager : MonoBehaviour
 {
-    private EnemiesActiveInScene enemiesThisScene;
     public static EnemiesManager Instance;
-    public bool[] enemieBoolList = new bool[30];
+    [SerializeField] private bool[] enemieBoolList = new bool[30];
     public List<Transform> enemiesList = new List<Transform>();
+    private EnemiesActiveInScene enemiesThisScene;
     private int sceneIndex;
     void Awake()
     {
@@ -16,12 +16,10 @@ public class EnemiesManager : MonoBehaviour
             Destroy(gameObject);
         else
             Instance = this;
-
     }
     private void Start()
     {
         enemiesThisScene = EnemiesActiveInScene.instance;
-        Debug.Log(enemiesThisScene.name);
         sceneIndex = SceneIndexManager.Instance.sceneIndex;
         int cnt = 0;
         foreach (Transform enemy in transform)
@@ -33,34 +31,20 @@ public class EnemiesManager : MonoBehaviour
         }
         for (int i = 0; i < enemiesList.Count; i++)
         {
-            if (enemiesThisScene.enabledEnemyList[sceneIndex, i])
+            if (enemiesThisScene.enemiesInAllScene[sceneIndex, i])
             {
                 enemiesList[i].gameObject.SetActive(true);
                 enemieBoolList[i] = true;
             }
         }
     }
-    private void Update()
+    public void SaveDeadEnemy(Transform enemy)
     {
-        //if (enemiesCount != fixedEnemyQuantity)
-        //{
-            //CheckEnemyDied();
-        //    fixedEnemyQuantity = enemiesCount;
-        //}
-    }
-    public void CheckEnemyDied()
-    {
-        for(int i=0; i<enemiesList.Count; i++)
+        if (enemiesList.Contains(enemy))
         {
-            if (!enemiesList[i].gameObject.activeInHierarchy)
-            {
-                Debug.Log("Deactive");
-                enemieBoolList[i] = false;
-            } else
-            {
-                enemieBoolList[i] = true;
-            }
+            int enemyIndex = enemiesList.IndexOf(enemy);
+            enemiesThisScene.SaveDeadEnemy(sceneIndex, enemyIndex);
+            enemieBoolList[enemyIndex] = false;
         }
-        enemiesThisScene.SaveEnemiesQuantityBeforeChangeScene(sceneIndex, enemieBoolList);
     }
 }

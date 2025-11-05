@@ -15,7 +15,7 @@ public class Enemy1_WolfSlideBackState : EnemyStates
         base.Start();
         enemy.Flip();
         enemy.knockFlip = true;
-        rb.velocity = new Vector2(-enemy.slideForceX * enemy.facingDir, rb.velocity.y);
+        rb.linearVelocity = new Vector2(-enemy.slideForceX * enemy.facingDir, rb.linearVelocity.y);
         stateDuration = enemy.slideBackDuration;
         spawnGroundedFxTimer = 0f;
     }
@@ -36,6 +36,6 @@ public class Enemy1_WolfSlideBackState : EnemyStates
         if (stateDuration < 0f)
             stateMachine.ChangeState(enemy.idleState);
         if (enemy.CheckNotBackGround())
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
     }
 }

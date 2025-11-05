@@ -32,8 +32,7 @@ public class StartGameCutSceneManager : MonoBehaviour
             yield return new WaitForSeconds(.1f);
             dialogueText.GetComponent<CanvasGroup>().alpha -= .05f;
         }
-        LoadingScene.instance.gameObject.SetActive(true);
-        LoadingScene.instance.FadeIn();
+        LoadingScene.instance.StartFadeIn(1 / 6f, true);
         Invoke("LoadScene", .5f);
     }
     private void LoadScene()

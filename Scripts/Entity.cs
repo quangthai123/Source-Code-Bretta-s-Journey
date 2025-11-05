@@ -37,9 +37,9 @@ public class Entity : MonoBehaviour
     }
     protected virtual void FlipController()
     {
-        if (rb.velocity.x < -.1f && facingDir == 1)
+        if (rb.linearVelocity.x < -.1f && facingDir == 1)
             Flip();
-        if (rb.velocity.x > .1f && facingDir == -1)
+        if (rb.linearVelocity.x > .1f && facingDir == -1)
             Flip();
     }
     public virtual void Flip()

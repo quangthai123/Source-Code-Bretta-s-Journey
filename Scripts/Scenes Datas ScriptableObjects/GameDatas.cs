@@ -76,6 +76,8 @@ public class GameDatas : ScriptableObject
     public bool finishLv1;
     public List<bool> upgradedSwordStatues;
     public int[] upgradedSwordLv; // luu index tuong nao da nang kiem lv nao, index cua tuong tuong ung voi vi tri trong mang
+
+    public List<bool> GainedAbilities;
     public void SetNewGame(int _saveSlot)
     {
         saveSlot = _saveSlot;
@@ -85,9 +87,9 @@ public class GameDatas : ScriptableObject
 
         isScenario = false;
 
-        currentScene = "StartGameCutScene";
+        currentScene = "Lv1_0";
         tempCurrentScene = currentScene;
-        initializePos = new Vector2(99f, 850f); // dau game cai nay se xac dinh bang voi vi tri nhan vat nhay tu tren nui xuong giao dien select lv sau cutscene//
+        initializePos = new Vector2(29.62721f, -4.636068f); // dau game cai nay se xac dinh bang voi vi tri nhan vat nhay tu tren nui xuong giao dien select lv sau cutscene//
                                                 // sau do se trigger va cham va xac dinh lai bang vi tri checkpoint cua select lv
 
         revivalCheckPointPos = new Vector2(-32f, 16f); // dau game cai nay se xac dinh o giao dien select lv bang voi vi tri checkpoint
@@ -110,20 +112,28 @@ public class GameDatas : ScriptableObject
         soulPos = Vector2.zero;
         currencySoul = 0;
 
-        newArmorialItems = null;
-        newImportantItems = null;
-        newSwordPieceItems = null;
-        newMagicGemItems = null;
+        newArmorialItems = new List<int>();
+        newImportantItems = new List<int>();
+        newSwordPieceItems = new List<int>();
+        newMagicGemItems = new List<int>();
 
-        amorialHadItems = null;
-        amorialEquippedItems = null;
+        amorialHadItems = new List<int>(); ;
+        amorialEquippedItems = new List<int>();
+        for (int i = 0; i < 9; i++)
+        {
+            amorialEquippedItems.Add(-1);
+        }
         currenArmorialSlot = 2;
 
-        importantHadItems = null;
-        usedImportantItems = null;
+        importantHadItems = new List<int>();
+        usedImportantItems = new List<int>();
 
-        swordPieceHadItems = null;
-        swordPieceEquippedItems = null;
+        swordPieceHadItems = new List<int>();
+        swordPieceEquippedItems = new List<int>();
+        for (int i = 0; i < 32; i++)
+        {
+            swordPieceEquippedItems.Add(-1);
+        }
         currentSwordPieceSlot = 4;
         swordPieceMergedItems = new List<int>();
 
@@ -160,6 +170,12 @@ public class GameDatas : ScriptableObject
             upgradedSwordStatues.Add(false);
         }
         upgradedSwordLv = new int[7] { -1, -1, -1, -1, -1, -1, -1 };
+
+        GainedAbilities = new List<bool>();
+        for (int i = 0; i < 4; i++)
+        {
+            GainedAbilities.Add(false);
+        }
     }
     public void GetDataFrom(GameDatas _gameData)
     {
@@ -228,6 +244,8 @@ public class GameDatas : ScriptableObject
 
         this.upgradedSwordStatues = _gameData.upgradedSwordStatues;
         this.upgradedSwordLv = _gameData.upgradedSwordLv;
+
+        this.GainedAbilities = _gameData.GainedAbilities;
     }
 }
 

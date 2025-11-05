@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -21,8 +22,8 @@ public abstract class InventoryLogic : MonoBehaviour
     [SerializeField] protected Image selectedItemImage;
     [SerializeField] protected TextMeshProUGUI selectedItemName;
     [SerializeField] protected TextMeshProUGUI selectedItemDescription;
-    [SerializeField] protected TextMeshProUGUI selectedItemLore;
-    [SerializeField] protected GameObject selectImage;
+    [SerializeField] protected TextMeshProUGUI selectedItemLoreTxt;
+    [SerializeField] protected GameObject selector;
 
     [Header("SelectImage Offset")]
     [SerializeField] protected float selectImageOffSetYWithHadItem;
@@ -30,17 +31,21 @@ public abstract class InventoryLogic : MonoBehaviour
     [SerializeField] protected GameObject newSignImage;
     [SerializeField] protected Vector2 newSignImagePos = new Vector2(34.54f, 34.54f);
     [SerializeField] protected List<int> newItems; // cac item da nhat nhung nguoi choi chua xem va co ky hieu ! 
-    protected GameDatas tempGameData;
-    protected virtual void Awake()
-    {
-        tempGameData = Resources.Load<GameDatas>("TempGameData");
-    }
+    [SerializeField] protected GameDatas tempGameData;
+    public Action<Image> OnMoveSlotSelector;
+    public Action OnPickUpNewItem;
+    protected string selectedLore;
+    [SerializeField] protected ScrollViewHandler scrollViewHandler;
+    [SerializeField] protected Transform spawnedItemHolder;
+    [SerializeField] protected float flyItemSpeed;
     protected virtual void Start()
     {
+        tempGameData = SaveManager.instance.tempGameData;
         LoadData();
         InitializeUIOnLoadScene();
         LoadHadItemUI();
         LoadEquippedItemUI();
+        selector.SetActive(false);
     }
     protected virtual void LoadData()
     {
@@ -66,7 +71,7 @@ public abstract class InventoryLogic : MonoBehaviour
                 image.enabled = false;
             }
         }
-        selectImage.SetActive(false);
+        selector.SetActive(false);
         loreUI.SetActive(false);
         itemInforUI.SetActive(false);
         selectedItemImage.gameObject.SetActive(false);
@@ -124,28 +129,31 @@ public abstract class InventoryLogic : MonoBehaviour
             cnt++;
         }
     }
-    //protected void DeactiveEquippedItemOnHadItem()
-    //{
-    //    if (equippedItems.Count >= 1)
-    //    {
-    //        foreach (int j in equippedItems)
-    //        {
-    //            if(j != -1)
-    //            { 
-    //                int index = GetIndexOnHadItemUIByItemIndex(j);
-    //                itemHadImage[index].color = new Color(itemHadImage[index].color.r, itemHadImage[index].color.g,
-    //                itemHadImage[index].color.b, 0f);               
-    //            }
-    //        }
-    //    }
-    //}
+    protected void Update()
+    {
+        if(Input.GetKey(KeyCode.Space) && !loreUI.activeInHierarchy) 
+            OpenLoreUI();
+        if(Input.GetKey(KeyCode.Escape) && loreUI.activeInHierarchy)
+        {
+            CloseLoreUI();
+        }
+    }
     public void OpenLoreUI()
     {
-        loreUI.SetActive(true);
+        if(!itemInforUI.activeInHierarchy)
+            return;
+        selectedItemLoreTxt.text = selectedLore;
+        loreUI.GetComponent<FadeEffectHandler>().StartFadeIn();
+        InventoryUI.Instance.FrezeeInventoryAction = true;
     }
     public void CloseLoreUI()
     {
-        loreUI.SetActive(false);
+        loreUI.GetComponent<FadeEffectHandler>().StartFadeOut(
+            () =>
+            {
+                InventoryUI.Instance.FrezeeInventoryAction = false;
+                loreUI.SetActive(false);
+            });
     }
     public virtual void AddNewItemSign()
     {
@@ -196,6 +204,45 @@ public abstract class InventoryLogic : MonoBehaviour
     public void DeactiveSelectNullImageOnPickupNewItem()
     {
         if (!itemInforUI.activeSelf)
-            selectImage.SetActive(false);
+        {
+            selector.SetActive(false);
+            OnPickUpNewItem?.Invoke();
+        }
+    }
+    protected IEnumerator DoFlyItemEffect(RectTransform startItem, RectTransform targetItem, Action callBack = null)
+    {
+        //Time.timeScale = 1f;
+        InventoryUI.Instance.FrezeeInventoryAction = true;
+        selector.SetActive(false);
+        RectTransform flyItem = Instantiate(startItem, startItem.position, Quaternion.identity, spawnedItemHolder);
+        StartCoroutine(SpawnItemShadowEffect(flyItem));
+        Image flyItemImage = flyItem.GetComponent<Image>();
+        flyItemImage.enabled = true;
+        flyItemImage.color = new Color(flyItemImage.color.r, flyItemImage.color.g, flyItemImage.color.b, 1f);
+        flyItem.SetAsLastSibling();
+        while (Vector3.Distance(flyItem.position, targetItem.position) > 0.1f)
+        {
+            flyItem.position = Vector3.MoveTowards(flyItem.position, targetItem.position, flyItemSpeed * Time.fixedDeltaTime);
+            yield return new WaitForSecondsRealtime(.02f);
+        }
+        Debug.Log("Fly Item Finish!!");
+        //Time.timeScale = 0f;
+        StopCoroutine("SpawnItemShadowEffect");
+        Destroy(flyItem.gameObject);
+        callBack?.Invoke();
+        InventoryUI.Instance.FrezeeInventoryAction = false;
+        selector.SetActive(true);
+    }
+    protected IEnumerator SpawnItemShadowEffect(RectTransform item)
+    {
+        while(item != null) 
+        { 
+            Transform itemShadow =
+                ItemShadowEffectSpawner.Instance.Spawn(
+                    ItemShadowEffectSpawner.Instance.ShadowName, item.position, Quaternion.identity);
+            ItemShadow itemShadowRectTransf = itemShadow.GetComponent<ItemShadow>();
+            itemShadowRectTransf.SetSprite(item, item.GetComponent<Image>().sprite);
+            yield return new WaitForSecondsRealtime(ItemShadowEffectSpawner.Instance.spawnShadowCd);
+        }
     }
 }

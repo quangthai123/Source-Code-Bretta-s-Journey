@@ -18,7 +18,7 @@ public class Enemy1_WolfAttackState : EnemyStates
     public override void Exit()
     {
         base.Exit();
-        rb.velocity = Vector3.zero;
+        rb.linearVelocity = Vector3.zero;
         enemy.isAttacking = false;
         enemy.transform.Find("Col Trigger").gameObject.layer = LayerMask.NameToLayer("CanDamagePlayer");
         attacked = false;
@@ -26,15 +26,15 @@ public class Enemy1_WolfAttackState : EnemyStates
     public override void Update()
     {
         base.Update();
-        if (rb.velocity.y < -.1f)
+        if (rb.linearVelocity.y < -.1f)
             attacked = true;
         if(enemy.CheckNotFrontGround() && !enemy.CheckGround())
         {
-            rb.velocity = new Vector2(0f, rb.velocity.y);
+            rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
             if(stateMachine.currentState != enemy.slideState)
             {
                 enemy.Flip();
-                enemy.rb.velocity = new Vector2(enemy.jumpBackForce.x * enemy.facingDir, enemy.jumpBackForce.y);
+                enemy.rb.linearVelocity = new Vector2(enemy.jumpBackForce.x * enemy.facingDir, enemy.jumpBackForce.y);
                 Debug.Log("bounce!!!!");
             }
         } else if (enemy.CheckGround() && attacked)

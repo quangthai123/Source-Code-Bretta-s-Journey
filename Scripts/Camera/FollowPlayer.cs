@@ -13,6 +13,10 @@ public class FollowPlayer : MonoBehaviour
 {
     [SerializeField] private FollowPlayerBodyPart bodyPart = FollowPlayerBodyPart.body;
     private Player player;
+    private void OnEnable()
+    {
+        player = Player.Instance;
+    }
     private void Start()
     {
         player = Player.Instance;

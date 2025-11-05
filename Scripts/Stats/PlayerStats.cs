@@ -25,6 +25,10 @@ public class PlayerStats : MonoBehaviour
     private void Awake()
     {
         tempGameData = Resources.Load<GameDatas>("TempGameData");
+        SetStatsFromTempGameData();
+    }
+    public void SetStatsFromTempGameData()
+    {
         currency = tempGameData.currency;
         maxHealth = tempGameData.maxHealth;
         currentHealth = tempGameData.currentHealth;
@@ -32,9 +36,6 @@ public class PlayerStats : MonoBehaviour
         currentMana = tempGameData.currentMana;
         swordLv = tempGameData.currentSwordLv;
         haveDied = tempGameData.haveDied;
-        if (haveDied && currentMana > maxMana.GetValue() / 2f)
-            currentMana = maxMana.GetValue() / 2f;
-
         flaskLv = tempGameData.flaskLv;
         flaskQuantity = tempGameData.flaskQuantity;
         fullHealFlaskQuantity = tempGameData.fullHealFlaskQuantity;
@@ -217,7 +218,7 @@ public class PlayerStats : MonoBehaviour
         }
         bool canAddMoreFlask = false;
         int flaskIndexToRemove = -1;
-        foreach(int itemIndex in Inventory.Instance.importantHadItems)
+        foreach(int itemIndex in tempGameData.importantHadItems)
         {
             // index binh mau tu 0 - 7
             if (itemIndex >= 0 && itemIndex <= 7)
@@ -238,10 +239,10 @@ public class PlayerStats : MonoBehaviour
             RefillAllFlask();
         tempGameData.flaskQuantity = flaskQuantity;
         ImportantItemUI.Instance.ReloadNewSignsOnUpgrade(flaskIndexToRemove);
-        Inventory.Instance.importantHadItems.Remove(flaskIndexToRemove);
-        Inventory.Instance.usedImportantItems.Add(flaskIndexToRemove);
-        SaveManager.instance.tempGameData.importantHadItems = Inventory.Instance.importantHadItems;
-        SaveManager.instance.tempGameData.usedImportantItems = Inventory.Instance.usedImportantItems;
+        //Inventory.Instance.importantHadItems.Remove(flaskIndexToRemove);
+        //Inventory.Instance.usedImportantItems.Add(flaskIndexToRemove);
+        tempGameData.importantHadItems.Remove(flaskIndexToRemove);
+        tempGameData.usedImportantItems.Add(flaskIndexToRemove);
         ImportantItemUI.Instance.LoadHadItemUI();
         //ImportantItemUI.Instance.RemoveAllNewSignOnEmptySlot();
         ImportantItemUI.Instance.CloseInforUIOnUpgrade();
@@ -335,7 +336,6 @@ public class PlayerStats : MonoBehaviour
     public void GetManaByAttack()
     {
         currentMana += 2;
-        tempGameData.currentMana = (int)currentMana;
         if(!haveDied && currentMana > maxMana.GetValue())
         {
             currentMana = maxMana.GetValue();
@@ -343,6 +343,7 @@ public class PlayerStats : MonoBehaviour
         {
             currentMana = maxMana.GetValue() / 2f;
         }
+        tempGameData.currentMana = (int)currentMana;
     }
     public void DeductManaByMagicSkill(int _manaUsed)
     {
